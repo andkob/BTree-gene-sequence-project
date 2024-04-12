@@ -10,8 +10,7 @@ import java.util.Random;
 
 public class BTree implements BTreeInterface
 {
-
-    static private final int DEGREE = 51;
+    static private final int DEGREE = 51; // Constant for this project
 
     private long size; // BTree size in Bytes
     private int height;
@@ -89,79 +88,114 @@ public class BTree implements BTreeInterface
         }
         return null;
     }
+  
+  	public void diskWrite(BTreeNode node, FileChannel fileChannel) throws IOException {
+        ByteBuffer buffer = ByteBuffer.allocate(getNodeDiskSize(node));
 
-    @Override
-    public long getSize() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getSize'");
-    }
+        // Start by writing the node metadata
+        buffer.putInt(node.n);
+        buffer.put((byte) (node.isLeaf ? 1 : 0));
 
-    @Override
-    public int getDegree() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getDegree'");
-    }
+        // Write keys
+        for (int i = 0; i < node.n; i++) {
+            buffer.putLong(node.keys[i]);
+        }
 
-    @Override
-    public int getNumberOfNodes() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getNumberOfNodes'");
-    }
+        // If not a leaf, write children addresses
+        if (!node.isLeaf) {
+            for (int i = 0; i <= node.n; i++) {  // note that there are n+1 children
+                buffer.putLong(node.children[i]);
+            }
+        }
 
-    @Override
-    public int getHeight() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getHeight'");
-    }
+        buffer.flip();  // prepare buffer for writing
+        fileChannel.position(node.diskAddress);  // Set position in file (if needed)
+        fileChannel.write(buffer);
+        fileChannel.force(true);  // ensure changes are written to disk
+	}
 
-    @Override
-    public void delete(long key) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
-    }
+	private int getNodeDiskSize(BTreeNode node) {
+	    int size = Integer.BYTES; // for 'n'
+	    size += 1; // for isLeaf
+	    size += Long.BYTES * node.keys.length; // for keys
+	    if (!node.isLeaf) {
+	        size += Long.BYTES * node.children.length; // for children addresses
+	    }
+	    return size;
+	}	
 
-    @Override
-    public void insert(TreeObject obj) throws IOException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'insert'");
-    }
+  @Override
+  public long getSize() {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'getSize'");
+  }
 
-    @Override
-    public void dumpToFile(PrintWriter out) throws IOException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'dumpToFile'");
-    }
+  @Override
+  public int getDegree() {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'getDegree'");
+  }
 
-    @Override
-    public TreeObject search(long key) throws IOException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'search'");
-    }
+  @Override
+  public int getNumberOfNodes() {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'getNumberOfNodes'");
+  }
+
+  @Override
+  public int getHeight() {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'getHeight'");
+  }
+
+  @Override
+  public void delete(long key) {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'delete'");
+  }
+
+  @Override
+  public void insert(TreeObject obj) throws IOException {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'insert'");
+  }
+
+  @Override
+  public void dumpToFile(PrintWriter out) throws IOException {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'dumpToFile'");
+  }
+
+  @Override
+  public TreeObject search(long key) throws IOException {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'search'");
+  }
 
 // size of file, address of root node, degree, height, numNodes
-    public int getMetaDataSize() {
-        return Long.BYTES * 2 + Integer.BYTES * 3;
-    }
+  public int getMetaDataSize() {
+      return Long.BYTES * 2 + Integer.BYTES * 3;
+  }
 
-    /**
-     * write meta data to top of the file
-     * DO NOT change the write order
-     */
-    public void writeMetaData() {
-        try {
-            channel.position(0); // set to start of file
-            ByteBuffer buffer = ByteBuffer.allocate(getMetaDataSize());
-            
-            buffer.putLong(size);
-            buffer.putLong(root.getPointer());
-            buffer.putInt(degree);
-            buffer.putInt(height);
-            buffer.putInt(nodeCount);
+  /**
+   * write meta data to top of the file
+   * DO NOT change the write order
+   */
+  public void writeMetaData() {
+      try {
+          channel.position(0); // set to start of file
+          ByteBuffer buffer = ByteBuffer.allocate(getMetaDataSize());
 
-            channel.write(buffer);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
+          buffer.putLong(size);
+          buffer.putLong(root.getPointer());
+          buffer.putInt(degree);
+          buffer.putInt(height);
+          buffer.putInt(nodeCount);
+
+          channel.write(buffer);
+      } catch (IOException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+      }
+   }
 }
