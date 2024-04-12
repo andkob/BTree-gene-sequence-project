@@ -1,52 +1,86 @@
 package cs321.btree;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.Random;
 
 public class BTree implements BTreeInterface
 {
 
-    public BTree() {
-        // TODO constructor
+    static private final int DEGREE = 51;
+
+    private long size; // BTree size in Bytes
+    private int height;
+    private int degree;
+    private int nodeCount;
+    private BTreeNode root;
+    private FileChannel channel;
+
+    public BTree(String filePath) {
+        this(filePath, DEGREE);
     }
 
-    public static void main(String[] args) {
-        BTree temp = new BTree();
-        String filePath = "C:\\Users\\Kobus\\VSCodeWorkspace\\cs321\\CS321_BTree_Project\\data\\files_gbk\\test0.gbk";
-        long position = 4205;
+    public BTree(String filePath, int degree) {
+        this.size = 0;
+        this.height = 0;
+        this.degree = degree;
+        this.nodeCount = 1;
 
-        // Read data from file
-        byte[] dataRead = temp.diskRead(filePath, position, 64);
-        if (dataRead != null) {
-            // Process the read data
-            System.out.println("Data read successfully: " + new String(dataRead));
-        } else {
-            System.out.println("Failed to read data from file.");
-        }
-    }
+        File file = new File(filePath);
+        RandomAccessFile raf = null;
 
-    public byte[] diskRead(String filePath, long position, int bytesToRead) {
-        try (RandomAccessFile file = new RandomAccessFile(filePath, "r");
-            FileChannel channel = file.getChannel()) {
+        try {
+            if (file.exists()) {
+                raf = new RandomAccessFile(filePath, "r");
+                channel = raf.getChannel();
+                // Read metadata from the file
+                ByteBuffer metadataBuffer = ByteBuffer.allocate(getMetaDataSize());
+                channel.read(metadataBuffer);
+                metadataBuffer.flip();
 
-                channel.position(position); // set the file cursor to the specified position
-                ByteBuffer buffer = ByteBuffer.allocate(bytesToRead); // create a byte buffer to read data
-                channel.read(buffer); // read data from the file into the byte buffer
+                // Parse metadata | DO NOT change the read order
+                size = metadataBuffer.getLong();
+                long rootPointer = metadataBuffer.getLong();
+                degree = metadataBuffer.getInt();
+                height = metadataBuffer.getInt();
+                nodeCount = metadataBuffer.getInt();
 
-                // Get the bytes from the byte buffer
-                byte[] data = new byte[bytesToRead];
-                buffer.flip();
-                buffer.get(data);
+                // Read root node from disk based on the rootPointer
+                ByteBuffer rootBuffer = ByteBuffer.allocate(BTreeNode.NODE_SIZE);
+                channel.read(rootBuffer, rootPointer);
+                rootBuffer.flip();
 
-                return data;
-            } catch (Exception e) {
+            } else {
+                file.createNewFile();
+                raf = new RandomAccessFile(file, "rw");
+                channel = raf.getChannel();
+                this.root = new BTreeNode();
+                writeMetaData(); // write meta data to file
+            }
+            raf.close();
+        } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
     }
+
+    public byte[] diskRead() {
+        try {
+    
+            // Construct the root node from the buffer
+            root = BTreeNode.fromByteBuffer(rootBuffer);
+    
+            return rootBuffer.array(); // Or return whatever representation of the root node you're using
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle the exception according to your application's requirements
+        }
+        return null;
+    }
+    
 
     @Override
     public long getSize() {
@@ -94,5 +128,32 @@ public class BTree implements BTreeInterface
     public TreeObject search(long key) throws IOException {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'search'");
+    }
+
+// size of file, address of root node, degree, height, numNodes
+    public int getMetaDataSize() {
+        return Long.BYTES * 2 + Integer.BYTES * 3;
+    }
+
+    /**
+     * write meta data to top of the file
+     * DO NOT change the write order
+     */
+    public void writeMetaData() {
+        try {
+            channel.position(0); // set to start of file
+            ByteBuffer buffer = ByteBuffer.allocate(getMetaDataSize());
+            
+            buffer.putLong(size);
+            buffer.putLong(root.getPointer());
+            buffer.putInt(degree);
+            buffer.putInt(height);
+            buffer.putInt(nodeCount);
+
+            channel.write(buffer);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }
