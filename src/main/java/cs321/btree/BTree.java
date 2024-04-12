@@ -54,6 +54,8 @@ public class BTree implements BTreeInterface
                 channel.read(rootBuffer, rootPointer);
                 rootBuffer.flip();
 
+                // Construct the root node from the buffer
+                root = BTreeNode.fromByteBuffer(rootBuffer); // 
             } else {
                 file.createNewFile();
                 raf = new RandomAccessFile(file, "rw");
@@ -67,20 +69,26 @@ public class BTree implements BTreeInterface
         }
     }
 
-    public byte[] diskRead() {
+    public byte[] diskRead(long nodePointer) {
         try {
+            // Calculate the position of the node in the file based on the nodePointer
+            long position = getMetaDataSize() + (nodePointer * BTreeNode.NODE_SIZE);
     
-            // Construct the root node from the buffer
-            root = BTreeNode.fromByteBuffer(rootBuffer);
+            // Read the node from the file
+            ByteBuffer nodeBuffer = ByteBuffer.allocate(BTreeNode.NODE_SIZE);
+            channel.read(nodeBuffer, position);
+            nodeBuffer.flip();
     
-            return rootBuffer.array(); // Or return whatever representation of the root node you're using
+            // Convert the ByteBuffer to a byte array
+            byte[] nodeData = new byte[BTreeNode.NODE_SIZE];
+            nodeBuffer.get(nodeData);
+    
+            return nodeData;
         } catch (IOException e) {
             e.printStackTrace();
-            // Handle the exception according to your application's requirements
         }
         return null;
     }
-    
 
     @Override
     public long getSize() {
