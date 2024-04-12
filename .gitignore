@@ -5,6 +5,9 @@
 # Eclipse
 bin/
 
+# VSCode
+.vscode/
+
 #IntelliJ
 .idea/
 out*
