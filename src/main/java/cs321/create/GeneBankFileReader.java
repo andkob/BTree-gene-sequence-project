@@ -71,8 +71,7 @@ public class GeneBankFileReader implements GeneBankFileReaderInterface  {
                     charsAdded++;
                     if(charsAdded == seqLength) {
                         trackedIndex++;
-                        System.out.println(sequence);
-                        return 0L;
+                        return SequenceUtils.dnaStringToLong(sequence);
                     }
                 } else {
                     if(charsAdded == 0) {

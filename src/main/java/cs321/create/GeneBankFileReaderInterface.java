@@ -17,6 +17,6 @@ public interface GeneBankFileReaderInterface {
      * @return the next sequence, formatted as a long
      * @throws IOException in case of failed or interrupted I/O
      */
-    long getNextSequence() throws IOException;
+    public long getNextSequence() throws IOException;
 
 }
