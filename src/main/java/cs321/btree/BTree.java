@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.Random;
 
 public class BTree implements BTreeInterface
 {
@@ -59,7 +58,7 @@ public class BTree implements BTreeInterface
                 file.createNewFile();
                 raf = new RandomAccessFile(file, "rw");
                 channel = raf.getChannel();
-                this.root = new BTreeNode();
+                this.root = new BTreeNode(degree);
                 writeMetaData(); // write meta data to file
             }
             raf.close();
