@@ -26,3 +26,8 @@ build/
 *.data.*
 *.dump.*
 dump
+
+# ignore these files too
+.classpath
+.project
+.settings/org.eclipse.buildship.core.prefs
