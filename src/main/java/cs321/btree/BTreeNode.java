@@ -2,6 +2,10 @@ package cs321.btree;
 
 import java.nio.ByteBuffer;
 
+/**
+ * Represents a node in a B-Tree structure. Each node can have multiple keys and children,
+ * depending on the degree of the B-Tree.
+ */
 public class BTreeNode {
     // This order will be the order of the node's metadata on the disk. DO NOT change this order.
     public int numKeys;
@@ -56,9 +60,11 @@ public class BTreeNode {
     }
 
     /**
-     * TODO read the relevant data from the ByteBuffer and use it to construct a BTreeNode object.
-     * @param buffer
-     * @return
+     * Converts a ByteBuffer into a BTreeNode object. This method should read
+     * the ByteBuffer and extract the necessary information to create a populated BTreeNode.
+     * 
+     * @param buffer the ByteBuffer containing the node's serialized data
+     * @return a new BTreeNode object constructed from the data in the buffer
      */
     public static BTreeNode fromByteBuffer(ByteBuffer buffer) {
         throw new UnsupportedOperationException("Unimplemented method 'fromByteBuffer'");

@@ -7,9 +7,14 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-public class BTree implements BTreeInterface
-{
-    static private final int OPTIMAL_DEGREE = 51; // calculated optimal degree t TODO - recalculate after a design is agreed upon
+/**
+ * Represents a B-Tree structure that provides efficient data insertion, deletion,
+ * and lookup. This implementation specifically supports disk-based operations
+ * to accommodate large data sets that do not fit into main memory.
+ */
+public class BTree implements BTreeInterface {
+	
+    static private final int DEGREE = 51; // calculated optimal degree t TODO - recalculate after a design is agreed upon
 
     private long size; // BTree size in Bytes
     private int height;
@@ -18,10 +23,24 @@ public class BTree implements BTreeInterface
     private BTreeNode root;
     private FileChannel disk;
 
+    /**
+     * Constructs a BTree using the default degree and initializes it from a file
+     * if it exists, or creates a new one if it does not.
+     *
+     * @param filePath the path to the file that stores the B-Tree on disk
+     */
     public BTree(String filePath) {
         this(filePath, OPTIMAL_DEGREE);
     }
 
+    /**
+     * Constructs a BTree from a specified file path and degree.
+     * If the file exists, it reads the BTree metadata and root from the file.
+     * Otherwise, it initializes a new empty BTree with a specified degree.
+     *
+     * @param filePath the path of the file to store the BTree
+     * @param degree   the minimum degree of the BTree
+     */
     public BTree(String filePath, int degree) {
         this.size = 0;
         this.height = 0;
@@ -65,7 +84,13 @@ public class BTree implements BTreeInterface
             e.printStackTrace();
         }
     }
-
+  
+    /**
+     * Reads the data of a BTreeNode from disk at a specified position.
+     *
+     * @param nodePointer the pointer to the node's position in the file
+     * @return BTreeNode the node at the specified pointer
+     */
     public BTreeNode diskRead(long nodePointer) {
         try {
             BTreeNode dummyNode = new BTreeNode(degree);
@@ -108,11 +133,21 @@ public class BTree implements BTreeInterface
         return null;
     }
   
-  	public void diskWrite(BTreeNode node, FileChannel fileChannel) throws IOException {
+    /**
+     * Writes a BTreeNode's data to disk at the node's specified disk address.
+     * Ensures that the node data is written as a single atomic operation.
+     *
+     * @param node        the BTreeNode to write to disk
+     * @param fileChannel the FileChannel to use for writing
+     * @throws IOException if there is an error during writing
+     */
+    public void diskWrite(BTreeNode node, FileChannel fileChannel) throws IOException {
+        // Determine the size of the node to allocate a buffer of appropriate size
         ByteBuffer buffer = ByteBuffer.allocate(getNodeDiskSize(node));
-
+      
         // Start by writing the node metadata
         buffer.putInt(node.numKeys);
+        // Write the leaf status as a byte (1 for true, 0 for false)
         buffer.put((byte) (node.isLeaf ? 1 : 0));
 
         // Write keys
@@ -126,18 +161,23 @@ public class BTree implements BTreeInterface
                 buffer.putLong(node.children[i]);
             }
         }
-
-        buffer.flip();  // prepare buffer for writing
-        fileChannel.position(node.getLocation());  // Set position in file (if needed)
+      
+        // Prepare the buffer to be written by setting the position back to the start
+        buffer.flip();
+        // Set the position in the file to the node's disk address
+        fileChannel.position(node.getLocation());
+        // Write the buffer to the file at the current position
         fileChannel.write(buffer);
-
-        // Append a newline character after writing the node data. This will be used as the delimiter
-        ByteBuffer newlineBuffer = ByteBuffer.wrap("\n".getBytes());
-        fileChannel.write(newlineBuffer);
-
-        fileChannel.force(true);  // ensure changes are written to disk
+        // Optionally force writing to disk for data integrity
+        fileChannel.force(true);
 	}
 
+  /**
+   * Calculates the required disk size for a BTreeNode based on its properties.
+   *
+   * @param node the BTreeNode for which to calculate the disk size
+   * @return the size in bytes required to store the node on disk
+   */  
 	private int getNodeDiskSize(BTreeNode node) {
 	    int size = Integer.BYTES; // for 'n'
 	    size += 1; // for isLeaf
@@ -196,7 +236,7 @@ public class BTree implements BTreeInterface
       throw new UnsupportedOperationException("Unimplemented method 'search'");
   }
 
-// size of file, address of root node, degree, height, numNodes
+  // size of file, address of root node, degree, height, numNodes
   public int getMetaDataSize() {
       return Long.BYTES * 2 + Integer.BYTES * 3;
   }
