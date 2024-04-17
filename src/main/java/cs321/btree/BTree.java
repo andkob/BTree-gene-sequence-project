@@ -14,7 +14,7 @@ import java.nio.channels.FileChannel;
  */
 public class BTree implements BTreeInterface {
 	
-    static private final int OPTIMAL_DEGREE = 51; // calculated optimal degree t TODO - recalculate after a design is agreed upon
+    static private final int OPTIMAL_DEGREE = 85; // calculated optimal degree t
 
     private long size; // BTree size in Bytes
     private int height;
@@ -72,7 +72,7 @@ public class BTree implements BTreeInterface {
                 rootBuffer.flip();
 
                 // Construct the root node from the buffer
-                root = BTreeNode.fromByteBuffer(rootBuffer);
+                root = BTreeNode.fromByteBuffer(rootBuffer); // TODO - implement or change this
             } else {
                 file.createNewFile();
                 disk = raf.getChannel();
@@ -113,7 +113,7 @@ public class BTree implements BTreeInterface {
             node.setParent(nodeBuffer.getLong()); // Read the parent pointer
             node.setLocation(nodeBuffer.getInt()); // Read the location
     
-            // Read keys
+            // Read Objects
             for (int i = 0; i < node.numKeys; i++) {
                 long key = nodeBuffer.getLong(); // Read the key
                 node.objects[i] = new TreeObject(key); // Create a TreeObject and store the key
