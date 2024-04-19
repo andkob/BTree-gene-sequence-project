@@ -30,7 +30,7 @@ public class BTreeNode {
      * @return the size of this node in bytes
      */
     public int getNodeSize() {
-        // objectsSize + childrenSIze + parentPointerSize + locationSize + isLeafSize + numKeysSize
+        // objectsSize + childrenSize + parentPointerSize + locationSize + isLeafSize + numKeysSize
         return TreeObject.SIZE * objects.length + Long.BYTES * children.length
                 + Long.BYTES + Integer.BYTES + 1 + Integer.BYTES;
     }
@@ -52,6 +52,14 @@ public class BTreeNode {
     }
 
     /**
+     * Returns the pointer to this node's parent
+     * @return the pointer to this node's parent
+     */
+    public long getParentPointer() {
+        return parentPointer;
+    }
+
+    /**
      * Sets the parent pointer of this node
      * @param parentPointer the pointer to this node's parent
      */
@@ -66,7 +74,25 @@ public class BTreeNode {
      * @param buffer the ByteBuffer containing the node's serialized data
      * @return a new BTreeNode object constructed from the data in the buffer
      */
-    public static BTreeNode fromByteBuffer(ByteBuffer buffer) {
-        throw new UnsupportedOperationException("Unimplemented method 'fromByteBuffer'");
+    public static BTreeNode fromByteBuffer(ByteBuffer buffer, int degree) {
+        BTreeNode newNode = new BTreeNode(degree);
+        int numKeys = buffer.getInt(); // Read the number of keys 'n'
+        newNode.numKeys = numKeys;
+        newNode.isLeaf = buffer.get() == 1; // Read the isLeaf flag
+        newNode.setParent(buffer.getLong()); // Read the parent pointer
+        newNode.setLocation(buffer.getInt());
+
+        for (int i = 0; i < numKeys; i++) {
+            long key = buffer.getLong(); // Read the key
+            newNode.objects[i] = new TreeObject(key); // Create a TreeObject and store the key
+        }
+
+        if (!newNode.isLeaf) {
+            for (int i = 0; i <= numKeys; i++) {
+                newNode.children[i] = buffer.getLong(); // Read the child pointer
+            }
+        }
+
+        return newNode;
     }
 }

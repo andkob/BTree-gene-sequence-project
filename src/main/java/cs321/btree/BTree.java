@@ -72,7 +72,7 @@ public class BTree implements BTreeInterface {
                 rootBuffer.flip();
 
                 // Construct the root node from the buffer
-                root = BTreeNode.fromByteBuffer(rootBuffer); // TODO - implement or change this
+                root = BTreeNode.fromByteBuffer(rootBuffer, degree);
             } else {
                 file.createNewFile();
                 disk = raf.getChannel();
@@ -141,14 +141,17 @@ public class BTree implements BTreeInterface {
      * @param fileChannel the FileChannel to use for writing
      * @throws IOException if there is an error during writing
      */
-    public void diskWrite(BTreeNode node, FileChannel fileChannel) throws IOException {
-        // Determine the size of the node to allocate a buffer of appropriate size
-        ByteBuffer buffer = ByteBuffer.allocate(getNodeDiskSize(node));
-      
-        // Start by writing the node metadata
-        buffer.putInt(node.numKeys);
-        // Write the leaf status as a byte (1 for true, 0 for false)
-        buffer.put((byte) (node.isLeaf ? 1 : 0));
+    public void diskWrite(BTreeNode node) throws IOException {
+        // Create a byte buffer with capacity: nodeSize
+        ByteBuffer buffer = ByteBuffer.allocate(node.getNodeSize());
+
+        // 
+        
+        // write node metadata to the buffer
+        buffer.putInt(node.numKeys); // write amount of keys
+        buffer.put((byte) (node.isLeaf ? 1 : 0)); // Write the leaf status as a byte (1 for true, 0 for false)
+        buffer.putLong(node.getParentPointer()); // write the parent pointer
+        buffer.putLong(node.getLocation()); // write the byte offset
 
         // Write keys
         for (int i = 0; i < node.numKeys; i++) {
@@ -161,85 +164,108 @@ public class BTree implements BTreeInterface {
                 buffer.putLong(node.children[i]);
             }
         }
-      
+        
         // Prepare the buffer to be written by setting the position back to the start
         buffer.flip();
-        // Set the position in the file to the node's disk address
-        fileChannel.position(node.getLocation());
         // Write the buffer to the file at the current position
-        fileChannel.write(buffer);
-        // Optionally force writing to disk for data integrity
-        fileChannel.force(true);
+        disk.write(buffer, node.getLocation());
 	}
 
-  /**
-   * Calculates the required disk size for a BTreeNode based on its properties.
-   *
-   * @param node the BTreeNode for which to calculate the disk size
-   * @return the size in bytes required to store the node on disk
-   */  
-	private int getNodeDiskSize(BTreeNode node) {
-	    int size = Integer.BYTES; // for 'n'
-	    size += 1; // for isLeaf
-	    size += Long.BYTES * node.objects.length; // for keys
-	    if (!node.isLeaf) {
-	        size += Long.BYTES * node.children.length; // for children addresses
-	    }
-	    return size;
-	}	
+    @Override
+    public long getSize() {
+        return (long) nodeCount * (2 * degree - 1); // each node has 2t - 1 keys
+    }
 
-  @Override
-  public long getSize() {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'getSize'");
-  }
+    @Override
+    public int getDegree() {
+        return degree;
+    }
 
-  @Override
-  public int getDegree() {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'getDegree'");
-  }
+    @Override
+    public int getNumberOfNodes() {
+        return nodeCount;
+    }
 
-  @Override
-  public int getNumberOfNodes() {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'getNumberOfNodes'");
-  }
+    @Override
+    public int getHeight() {
+        return height;
+    }
 
-  @Override
-  public int getHeight() {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'getHeight'");
-  }
+    @Override
+    public void delete(long key) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+    }
 
-  @Override
-  public void delete(long key) {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'delete'");
-  }
+    @Override
+    public void insert(TreeObject obj) throws IOException {
+        if (root.numKeys == (2 * degree - 1)) {
+            BTreeNode newNode = new BTreeNode(degree);
+            newNode.numKeys = 0;
+            newNode.isLeaf = false;
+            newNode.children[0] = root.getLocation(); // set first child to the old root
 
-  @Override
-  public void insert(TreeObject obj) throws IOException {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'insert'");
-  }
+            
+            splitChild(newNode, 0, root);
+            root = newNode; // update root
+        } else {
+            insertNonFull(obj);
+        }
+    }
 
-  @Override
-  public void dumpToFile(PrintWriter out) throws IOException {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'dumpToFile'");
-  }
+    private void insertNonFull(TreeObject obj) throws IOException {
 
-  @Override
-  public TreeObject search(long key) throws IOException {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'search'");
-  }
+    }
 
-  // size of file, address of root node, degree, height, numNodes
-  public int getMetaDataSize() {
-      return Long.BYTES * 2 + Integer.BYTES * 3;
-  }
+    private void splitChild(BTreeNode node, int i, BTreeNode nodesChild) {
+        BTreeNode z = new BTreeNode(degree); // this is the new splitted node
+        z.isLeaf = nodesChild.isLeaf; // set as leaf if nodes child is a leaf
+        z.numKeys = degree - 1;
+        
+        // copy keys
+        for (int j = 0; j < degree - 1; j++) {
+            z.objects[j] = nodesChild.objects[degree-1 + j];
+        }
+
+        // copy child pointers if not a leaf
+        if (!nodesChild.isLeaf) {
+            for (int j = 0; j < degree; j++) {
+                z.children[j] = nodesChild.children[degree + j];
+            }
+        }
+    }
+
+    @Override
+    public void dumpToFile(PrintWriter out) throws IOException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'dumpToFile'");
+    }
+
+    @Override
+    public TreeObject search(long key) throws IOException {
+        return helperSearch(root, key);
+    }
+
+    private TreeObject helperSearch(BTreeNode node, long key) {
+        int i = 0;
+        while (i <= node.numKeys && key < node.objects[i].getKey()) {
+            i++;
+        }
+        if (i <= node.numKeys && key == node.objects[i].getKey()) {
+            return node.objects[i];
+        }
+        if (node.isLeaf) {
+            return null; // not found
+        } else {
+            BTreeNode nextNode = diskRead(node.getLocation() + node.getNodeSize());
+            return helperSearch(nextNode, key); // check this return statement
+        }
+    }
+
+    // size of file, address of root node, degree, height, numNodes
+    public int getMetaDataSize() {
+        return Long.BYTES * 2 + Integer.BYTES * 3;
+    }
 
   /**
    * write meta data to top of the file
