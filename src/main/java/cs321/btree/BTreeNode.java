@@ -13,7 +13,7 @@ public class BTreeNode {
     public int numKeys;
     public boolean isLeaf;
     private long parentPointer;
-    private int location; // the byte offset in the file
+    private long location; // the byte offset in the file
     public TreeObject[] keys;
     public long[] children; // child pointers
 
@@ -41,7 +41,7 @@ public class BTreeNode {
      * Returns the location of this node in terms of Byte offset
      * @return the Byte offset of this node on the disk
      */
-    public int getLocation() {
+    public long getLocation() {
         return location;
     }
 
@@ -49,7 +49,7 @@ public class BTreeNode {
      * Sets the Byte offset in the random access file of this node
      * @param location the location of this node in the random access file (Byte offset)
      */
-    public void setLocation(int location) {
+    public void setLocation(long location) {
         this.location = location;
     }
 
