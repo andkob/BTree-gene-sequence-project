@@ -21,10 +21,12 @@ public class BTreeNode {
      * Basic constructor for a BTree Node
      */
     public BTreeNode(int degree) {
+        numKeys = 0;
+        isLeaf = true;
+        parentPointer = 0;
+        location = 0;
         keys = new TreeObject[2 * degree - 1];
         children = new long[2 * degree];
-        isLeaf = true;
-        numKeys = 0;
     }
 
     /**

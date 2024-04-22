@@ -33,7 +33,7 @@ public class BTree implements BTreeInterface {
      *
      * @param filePath the path to the file that stores the B-Tree on disk
      */
-    public BTree(String filePath) throws IOException {
+    public BTree(String filePath) {
         this(OPTIMAL_DEGREE, filePath);
     }
 
@@ -46,8 +46,8 @@ public class BTree implements BTreeInterface {
      * @param filePath the path of the file to store the BTree
      */
     @SuppressWarnings("resource")
-    public BTree(int degree, String filePath) throws IOException {
-        this.size = 0;
+    public BTree(int degree, String filePath) {
+        this.size = getMetaDataSize();
         this.height = 0;
         this.degree = degree;
         this.nodeCount = 1;
@@ -56,37 +56,41 @@ public class BTree implements BTreeInterface {
         boolean forceElse = false; // forces the constructor into the else block if false
 
         File file = new File(filePath);
-        RandomAccessFile raf = new RandomAccessFile(file, "rw");
-        if (file.exists() && forceElse) {
-            disk = raf.getChannel(); // initialize file channel with the unique FileChannel associated with the RAF
-            
-            // Read metadata from the file
-            ByteBuffer metadataBuffer = ByteBuffer.allocate(getMetaDataSize());
-            disk.read(metadataBuffer);
+        try {
+            RandomAccessFile raf = new RandomAccessFile(file, "rw");
+            if (file.exists() && forceElse) {
+                disk = raf.getChannel(); // initialize file channel with the unique FileChannel associated with the RAF
+                
+                // Read metadata from the file
+                ByteBuffer metadataBuffer = ByteBuffer.allocate(getMetaDataSize());
+                disk.read(metadataBuffer);
 
-            // Parse metadata | DO NOT change the read order
-            metadataBuffer.flip(); // prepare for reading
-            size = metadataBuffer.getLong();
-            long rootPointer = metadataBuffer.getLong();
-            degree = metadataBuffer.getInt();
-            height = metadataBuffer.getInt();
-            nodeCount = metadataBuffer.getInt();
+                // Parse metadata | DO NOT change the read order
+                metadataBuffer.flip(); // prepare for reading
+                size = metadataBuffer.getLong();
+                long rootPointer = metadataBuffer.getLong();
+                degree = metadataBuffer.getInt();
+                height = metadataBuffer.getInt();
+                nodeCount = metadataBuffer.getInt();
 
-            // Read root node from disk based on the rootPointer
-            BTreeNode dummyRoot = new BTreeNode(degree);
-            ByteBuffer rootBuffer = ByteBuffer.allocate(dummyRoot.getNodeSize());
-            disk.read(rootBuffer, rootPointer);
-            rootBuffer.flip();
+                // Read root node from disk based on the rootPointer
+                BTreeNode dummyRoot = new BTreeNode(degree);
+                ByteBuffer rootBuffer = ByteBuffer.allocate(dummyRoot.getNodeSize());
+                disk.read(rootBuffer, rootPointer);
+                rootBuffer.flip();
 
-            // Construct the root node from the buffer
-            root = BTreeNode.fromByteBuffer(rootBuffer, degree);
-        } else {
-            file.createNewFile();
-            disk = raf.getChannel();
-            this.root = new BTreeNode(degree);
-            writeMetaData(); // write meta data to file
-            root.setLocation(disk.size()); // set the location of the root node based on current file size TODO returning a large number
-            diskWrite(root); // write the root node to the disk
+                // Construct the root node from the buffer
+                root = BTreeNode.fromByteBuffer(rootBuffer, degree);
+            } else {
+                file.createNewFile();
+                disk = raf.getChannel();
+                this.root = new BTreeNode(degree);
+                writeMetaData(); // write meta data to file
+                testReadMetaData(); // TODO TEST
+                diskWrite(root); // write the root node to the disk
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
   
@@ -169,6 +173,10 @@ public class BTree implements BTreeInterface {
         // Write the buffer to the file at the current position
         disk.write(buffer, node.getLocation());
 	}
+
+    public BTreeNode getRoot() {
+        return root;
+    }
 
     @Override
     public long getSize() {
@@ -353,10 +361,12 @@ public class BTree implements BTreeInterface {
     public void writeMetaData() throws IOException {
         disk.position(0); // set to start of file
         ByteBuffer buffer = ByteBuffer.allocate(getMetaDataSize());
+        buffer.position(0);
 
         // initialize the buffer with the data
-        buffer.putLong(size);
-        buffer.putLong(root.getLocation());
+        buffer.putLong(size); // write BTreeSize in bytes
+        System.out.println("The size is: " + size + " bytes");
+        buffer.putLong(root.getLocation()); // write the location of the root
         buffer.putInt(degree);
         buffer.putInt(height);
         buffer.putInt(nodeCount);
@@ -364,5 +374,20 @@ public class BTree implements BTreeInterface {
         // write the data to the disk
         buffer.flip();
         disk.write(buffer);
+    }
+
+    // TODO TEMPORARY METHOD
+    public long testReadMetaData() throws IOException {
+        ByteBuffer buff = ByteBuffer.allocate(getMetaDataSize());
+        buff.position(0);
+        disk.position(0);
+        disk.read(buff);
+        buff.flip();
+
+        long size = buff.getLong(); // read the size
+        long rootLocation = buff.getLong(); // read the location
+        int degree = buff.getInt(); // read the degree
+        System.out.println("read size: " + size);
+        return size; // see if this works properly
     }
 }
