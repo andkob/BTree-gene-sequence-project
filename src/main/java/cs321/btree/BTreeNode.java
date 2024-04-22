@@ -5,6 +5,8 @@ import java.nio.ByteBuffer;
 /**
  * Represents a node in a B-Tree structure. Each node can have multiple keys and children,
  * depending on the degree of the B-Tree.
+ * 
+ * @author Andrew Kobus
  */
 public class BTreeNode {
     // This order will be the order of the node's metadata on the disk. DO NOT change this order.
@@ -12,14 +14,14 @@ public class BTreeNode {
     public boolean isLeaf;
     private long parentPointer;
     private int location; // the byte offset in the file
-    public TreeObject[] objects;
+    public TreeObject[] keys;
     public long[] children; // child pointers
 
     /**
      * Basic constructor for a BTree Node
      */
     public BTreeNode(int degree) {
-        objects = new TreeObject[2 * degree - 1];
+        keys = new TreeObject[2 * degree - 1];
         children = new long[2 * degree];
         isLeaf = true;
         numKeys = 0;
@@ -31,7 +33,7 @@ public class BTreeNode {
      */
     public int getNodeSize() {
         // objectsSize + childrenSize + parentPointerSize + locationSize + isLeafSize + numKeysSize
-        return TreeObject.SIZE * objects.length + Long.BYTES * children.length
+        return TreeObject.SIZE * keys.length + Long.BYTES * children.length
                 + Long.BYTES + Integer.BYTES + 1 + Integer.BYTES;
     }
 
@@ -84,7 +86,7 @@ public class BTreeNode {
 
         for (int i = 0; i < numKeys; i++) {
             long key = buffer.getLong(); // Read the key
-            newNode.objects[i] = new TreeObject(key); // Create a TreeObject and store the key
+            newNode.keys[i] = new TreeObject(key); // Create a TreeObject and store the key
         }
 
         if (!newNode.isLeaf) {
