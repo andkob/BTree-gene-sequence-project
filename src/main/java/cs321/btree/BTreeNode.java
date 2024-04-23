@@ -34,9 +34,9 @@ public class BTreeNode {
      * @return the size of this node in bytes
      */
     public int getNodeSize() {
-        // objectsSize + childrenSize + parentPointerSize + locationSize + isLeafSize + numKeysSize
+        // keysSize + childrenSize + parentPointerSize + locationSize + isLeafSize + numKeysSize
         return TreeObject.SIZE * keys.length + Long.BYTES * children.length
-                + Long.BYTES + Integer.BYTES + 1 + Integer.BYTES;
+                + Long.BYTES + Long.BYTES + 1 + Integer.BYTES;
     }
 
     /**
@@ -69,34 +69,5 @@ public class BTreeNode {
      */
     public void setParent(long parentPointer) {
         this.parentPointer = parentPointer;
-    }
-
-    /**
-     * Converts a ByteBuffer into a BTreeNode object. This method should read
-     * the ByteBuffer and extract the necessary information to create a populated BTreeNode.
-     * 
-     * @param buffer the ByteBuffer containing the node's serialized data
-     * @return a new BTreeNode object constructed from the data in the buffer
-     */
-    public static BTreeNode fromByteBuffer(ByteBuffer buffer, int degree) {
-        BTreeNode newNode = new BTreeNode(degree);
-        int numKeys = buffer.getInt(); // Read the number of keys 'n'
-        newNode.numKeys = numKeys;
-        newNode.isLeaf = buffer.get() == 1; // Read the isLeaf flag
-        newNode.setParent(buffer.getLong()); // Read the parent pointer
-        newNode.setLocation(buffer.getInt());
-
-        for (int i = 0; i < numKeys; i++) {
-            long key = buffer.getLong(); // Read the key
-            newNode.keys[i] = new TreeObject(key); // Create a TreeObject and store the key
-        }
-
-        if (!newNode.isLeaf) {
-            for (int i = 0; i <= numKeys; i++) {
-                newNode.children[i] = buffer.getLong(); // Read the child pointer
-            }
-        }
-
-        return newNode;
     }
 }

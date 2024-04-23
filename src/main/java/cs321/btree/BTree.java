@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.Random;
 
 /**
  * Represents a B-Tree structure that provides efficient data insertion, deletion,
@@ -45,28 +44,26 @@ public class BTree implements BTreeInterface {
      * @param degree   the minimum degree of the BTree
      * @param filePath the path of the file to store the BTree
      */
-    @SuppressWarnings("resource")
+    @SuppressWarnings("resource") // raf must stay open
     public BTree(int degree, String filePath) {
-        this.size = getMetaDataSize();
+        this.size = 0; 
         this.height = 0;
         this.degree = degree;
         this.nodeCount = 1;
 
-        //TODO TESTING VARIABLE - delete this later
-        boolean forceElse = false; // forces the constructor into the else block if false
-
         File file = new File(filePath);
         try {
-            RandomAccessFile raf = new RandomAccessFile(file, "rw");
-            if (file.exists() && forceElse) {
+            if (file.exists()) {
+                RandomAccessFile raf = new RandomAccessFile(file, "rw");
                 disk = raf.getChannel(); // initialize file channel with the unique FileChannel associated with the RAF
-                
+
                 // Read metadata from the file
                 ByteBuffer metadataBuffer = ByteBuffer.allocate(getMetaDataSize());
+                disk.position(0); // set the file channel to the beginning of the file
                 disk.read(metadataBuffer);
 
                 // Parse metadata | DO NOT change the read order
-                metadataBuffer.flip(); // prepare for reading
+                metadataBuffer.flip();
                 size = metadataBuffer.getLong();
                 long rootPointer = metadataBuffer.getLong();
                 degree = metadataBuffer.getInt();
@@ -74,19 +71,15 @@ public class BTree implements BTreeInterface {
                 nodeCount = metadataBuffer.getInt();
 
                 // Read root node from disk based on the rootPointer
-                BTreeNode dummyRoot = new BTreeNode(degree);
-                ByteBuffer rootBuffer = ByteBuffer.allocate(dummyRoot.getNodeSize());
-                disk.read(rootBuffer, rootPointer);
-                rootBuffer.flip();
-
-                // Construct the root node from the buffer
-                root = BTreeNode.fromByteBuffer(rootBuffer, degree);
+                root = diskRead(rootPointer);
             } else {
                 file.createNewFile();
-                disk = raf.getChannel();
-                this.root = new BTreeNode(degree);
+                RandomAccessFile raf = new RandomAccessFile(file, "rw");
+                disk = raf.getChannel(); // initialize file channel with the unique FileChannel associated with the RAF
+                root = new BTreeNode(degree); // initialize the root node as a new node
+                root.setLocation(getMetaDataSize()); // set the root location after the BTree metadata
+                size = getMetaDataSize() + root.getNodeSize(); // Initial BTree size (237 Bytes)
                 writeMetaData(); // write meta data to file
-                testReadMetaData(); // TODO TEST
                 diskWrite(root); // write the root node to the disk
             }
         } catch (IOException e) {
@@ -102,19 +95,15 @@ public class BTree implements BTreeInterface {
      * @throws IOException  if there is an error during reading
      */
     public BTreeNode diskRead(long nodePointer) throws IOException {
-        BTreeNode dummyNode = new BTreeNode(degree);
-        // Determine the size of the node
-        int nodeSize = dummyNode.getNodeSize();
-        // Calculate the position of the node in the file based on the nodePointer
-        long position = getMetaDataSize() + nodePointer;
+        // Create a new BTreeNode object to hold the read data
+        BTreeNode node = new BTreeNode(degree);
+        int nodeSize = node.getNodeSize(); // Determine the size of the node for the byte buffer
 
         // Read the node from the file
         ByteBuffer nodeBuffer = ByteBuffer.allocate(nodeSize);
-        disk.read(nodeBuffer, position);
-        nodeBuffer.flip();
-
-        // Create a new BTreeNode object to hold the read data
-        BTreeNode node = new BTreeNode(degree);
+        disk.position(nodePointer); // set position starting at the node's location
+        disk.read(nodeBuffer);
+        nodeBuffer.flip(); // reset to start at the nodePointer
 
         // Read the node's metadata from the buffer
         node.numKeys = nodeBuffer.getInt(); // Read the number of keys 'n'
@@ -137,7 +126,7 @@ public class BTree implements BTreeInterface {
 
         return node;
     }
-  
+
     /**
      * Writes a BTreeNode's data to disk at the node's specified disk address.
      *
@@ -147,8 +136,6 @@ public class BTree implements BTreeInterface {
     public void diskWrite(BTreeNode node) throws IOException {
         // Create a byte buffer with capacity: nodeSize
         ByteBuffer buffer = ByteBuffer.allocate(node.getNodeSize());
-
-        // 
         
         // write node metadata to the buffer
         buffer.putInt(node.numKeys); // write amount of keys
@@ -168,15 +155,11 @@ public class BTree implements BTreeInterface {
             }
         }
         
-        // Prepare the buffer to be written by setting the position back to the start
-        buffer.flip();
         // Write the buffer to the file at the current position
-        disk.write(buffer, node.getLocation());
+        buffer.flip();
+        disk.position(node.getLocation());
+        disk.write(buffer);
 	}
-
-    public BTreeNode getRoot() {
-        return root;
-    }
 
     @Override
     public long getSize() {
@@ -198,9 +181,14 @@ public class BTree implements BTreeInterface {
         return height;
     }
 
+    public long[] getSortedKeyArray() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getSortedKeyArray'");
+    }
+
     @Override
     public void delete(long key) {
-        // TODO Auto-generated method stub
+        // Javadoc says "not implemented" sooo \O/
         throw new UnsupportedOperationException("Unimplemented method 'delete'");
     }
 
@@ -220,18 +208,22 @@ public class BTree implements BTreeInterface {
     }
 
     private void insertNonFull(BTreeNode targetNode, TreeObject key) throws IOException {
-        int i = targetNode.numKeys - 1; // Initialize an insertion index
+        int i = targetNode.numKeys; // Initialize an insertion index
         if (targetNode.isLeaf) {
-            while (i >= 0 && targetNode.keys[i].compareTo(key) > 0) {
-                i--;
-            }
-            // Insert the key into the node if there are no duplicates, otherwise increment the key's frequency
-            if (targetNode.keys[i].compareTo(key) != 0) {
-                targetNode.keys[i + 1] = key;
-                targetNode.numKeys++;
-                diskWrite(targetNode);
+            if (targetNode.numKeys == 0) {
+                targetNode.keys[i] = key;
             } else {
-                targetNode.keys[i].incrementFrequency();
+                while (i >= 0 && targetNode.keys[i].compareTo(key) > 0) {
+                    i--;
+                }
+                // Insert the key into the node if there are no duplicates, otherwise increment the key's frequency
+                if (targetNode.keys[i].compareTo(key) != 0) {
+                    targetNode.keys[i + 1] = key;
+                    targetNode.numKeys++;
+                    diskWrite(targetNode);
+                } else {
+                    targetNode.keys[i].incrementFrequency();
+                }
             }
         } else {
             while (i >= 0 && targetNode.keys[i].compareTo(key) > 0) {
@@ -282,7 +274,7 @@ public class BTree implements BTreeInterface {
         if (!child.isLeaf) {
             for (int j = 0; j < degree; j++) {
                 newChild.children[j] = child.children[degree + j];
-                child.children[degree + j] = -1; // clear the child pointer in the child node
+                child.children[degree + j] = -1; // clear the child pointer in the child node TODO - is -1 a good value???
             }
         }
 
@@ -343,12 +335,10 @@ public class BTree implements BTreeInterface {
         }
     }
 
-    public long[] getSortedKeyArray() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getSortedKeyArray'");
-    }
-
-    // size of file, address of root node, degree, height, numNodes
+    /**
+     * Calculates and returns the total size in bytes of the B-Tree metadata
+     * @return The size of the file, address of root node, degree, height, and numNodes variables
+     */
     public int getMetaDataSize() {
         return Long.BYTES * 2 + Integer.BYTES * 3;
     }
@@ -365,7 +355,6 @@ public class BTree implements BTreeInterface {
 
         // initialize the buffer with the data
         buffer.putLong(size); // write BTreeSize in bytes
-        System.out.println("The size is: " + size + " bytes");
         buffer.putLong(root.getLocation()); // write the location of the root
         buffer.putInt(degree);
         buffer.putInt(height);
@@ -374,20 +363,5 @@ public class BTree implements BTreeInterface {
         // write the data to the disk
         buffer.flip();
         disk.write(buffer);
-    }
-
-    // TODO TEMPORARY METHOD
-    public long testReadMetaData() throws IOException {
-        ByteBuffer buff = ByteBuffer.allocate(getMetaDataSize());
-        buff.position(0);
-        disk.position(0);
-        disk.read(buff);
-        buff.flip();
-
-        long size = buff.getLong(); // read the size
-        long rootLocation = buff.getLong(); // read the location
-        int degree = buff.getInt(); // read the degree
-        System.out.println("read size: " + size);
-        return size; // see if this works properly
     }
 }
