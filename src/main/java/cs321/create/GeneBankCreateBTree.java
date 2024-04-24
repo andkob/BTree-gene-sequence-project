@@ -1,6 +1,7 @@
 package cs321.create;
 
 import cs321.btree.BTree;
+import cs321.btree.TreeObject;
 import cs321.common.ParseArgumentException;
 
 import java.io.*;
@@ -10,32 +11,39 @@ public class GeneBankCreateBTree
 {
 
     public static void main(String[] args) throws Exception {
-//        System.out.println("Hello world from cs321.create.GeneBankCreateBTree.main");
-//        GeneBankCreateBTreeArguments geneBankCreateBTreeArguments = parseArgumentsAndHandleExceptions(args);
-        try {
+        try 
+        {
             GeneBankCreateBTreeArguments arguments = parseArgumentsAndHandleExceptions(args);
+            
+            int sequence = arguments.getSubsequenceLength();
+            
             File gbkFile = new File(arguments.getGbkFileName());
             if (!gbkFile.exists() || !gbkFile.isFile()) {
                 System.err.println("Error: The specified file '" + arguments.getGbkFileName() + "' does not exist or is not a valid file.");
                 System.exit(1);
             }
-
-            BTree tree = new BTree(arguments.getDegree(), arguments.getSubsequenceLength(), arguments.getGbkFileName(), arguments.getUseCache(), arguments.getCacheSize());
-
-            GeneBankFileReader reader = new GeneBankFileReader(gbkFile, arguments.getSubsequenceLength());
-            long sequence;
-            while ((sequence = reader.getNextSequence()) != -1) {
-                tree.insert(sequence);
+            
+            GeneBankFileReader reader = new GeneBankFileReader(gbkFile, sequence);
+            
+            BTree tree = new BTree(arguments.getDegree(), arguments.getGbkFileName(), sequence, arguments.getUseCache(), arguments.getCacheSize());
+            
+            while ((sequence = (int)reader.getNextSequence()) != -1) {
+                tree.insert(new TreeObject(sequence));
             }
-
+            
             if (arguments.getDebugLevel() == 1) {
-                tree.dump(); // Assuming a method in BTree that dumps all elements for debugging
+            	PrintWriter printWriter = new PrintWriter(new FileWriter(arguments.getGbkFileName() + ".dump." + sequence)); // name of dump files
+                tree.dumpToFile(printWriter);
+                printWriter.close();
             }
-        } catch (Exception e) {
-            System.err.println("An error has occurred while parsing your arguments.");
-            e.printStackTrace();
-            System.err.println();
-;           printUsageAndExit(e.getMessage());
+            
+        } 
+        catch (Exception e) 
+        {
+        	System.err.println("An error has occurred while parsing the arguments.");
+        	e.printStackTrace();
+        	System.err.println();
+        	printUsageAndExit(e.getMessage());
         }
     }
 

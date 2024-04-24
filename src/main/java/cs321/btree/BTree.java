@@ -30,9 +30,9 @@ public class BTree implements BTreeInterface {
      * @param filePath the path to the file that stores the B-Tree on disk
      */
     public BTree(String filePath) {
-        this(filePath, OPTIMAL_DEGREE);
+        this(OPTIMAL_DEGREE, filePath, 0, false, 0); //idk why this was giving me an error
     }
-
+    
     /**
      * Constructs a BTree from a specified file path and degree.
      * If the file exists, it reads the BTree metadata and root from the file.
@@ -41,7 +41,7 @@ public class BTree implements BTreeInterface {
      * @param filePath the path of the file to store the BTree
      * @param degree   the minimum degree of the BTree
      */
-    public BTree(String filePath, int degree) {
+    public BTree(int degree, String filePath, int seqLength, boolean useCache, int cacheSize) {
         this.size = 0;
         this.height = 0;
         this.degree = degree;
