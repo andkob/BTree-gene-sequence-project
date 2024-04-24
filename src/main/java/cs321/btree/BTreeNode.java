@@ -14,7 +14,7 @@ public class BTreeNode {
     private int location; // the byte offset in the file
     public TreeObject[] objects;
     public long[] children; // child pointers
-
+    
     /**
      * Basic constructor for a BTree Node
      */

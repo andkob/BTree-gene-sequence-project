@@ -226,8 +226,54 @@ public class BTree implements BTreeInterface {
 
   @Override
   public void dumpToFile(PrintWriter out) throws IOException {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'dumpToFile'");
+      // Check if the tree is empty
+      if (root == null) {
+          out.println("The B-tree is empty.");
+          return;
+      }
+      // Start the recursive in-order traversal from the root
+      dumpNode(root, out);
+  }
+
+  /**
+   * A helper method to perform an in-order traversal of the B-tree, starting from
+   * a given node, and writing each key to a PrintWriter.
+   *
+   * @param node The node to start the traversal from.
+   * @param out  The PrintWriter to write the keys to.
+   * @throws IOException If there is an error reading from the disk.
+   */
+  private void dumpNode(BTreeNode node, PrintWriter out) throws IOException {
+      if (node == null) {
+          return; // Base case: reached a leaf's child.
+      }
+
+      // If the node is not a leaf, recurse on the left child of the first key.
+      if (!node.isLeaf) {
+          for (int i = 0; i < node.numKeys; i++) {
+              // Recursively visit the left child
+              if (node.children[i] != -1) {
+                  BTreeNode child = diskRead(node.children[i]);
+                  dumpNode(child, out);
+              }
+              // Visit the current key
+              if (node.objects[i] != null) {
+                  out.println(node.objects[i].getKey() + " - Frequency: " + node.objects[i].getFrequency());
+              }
+              // Recursively visit the right child of the last key
+              if (i == node.numKeys - 1 && node.children[i + 1] != -1) {
+                  BTreeNode child = diskRead(node.children[i + 1]);
+                  dumpNode(child, out);
+              }
+          }
+      } else {
+          // Leaf node, simply print all keys
+          for (int i = 0; i < node.numKeys; i++) {
+              if (node.objects[i] != null) {
+                  out.println(node.objects[i].getKey() + " - Frequency: " + node.objects[i].getFrequency());
+              }
+          }
+      }
   }
 
   @Override

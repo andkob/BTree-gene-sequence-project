@@ -18,4 +18,13 @@ public class TreeObject
     public long getKey() {
         return DNA;
     }
+
+	public int getFrequency() {
+		return frequency;
+	}
+	
+    public void incrementFrequency() {
+        frequency++;
+    }
+	
 }
