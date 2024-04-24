@@ -249,7 +249,7 @@ public class BTree implements BTreeInterface {
         int i = targetNode.numKeys - 1; // Initialize an insertion index
         if (targetNode.isLeaf) {
             // Shift keys to make room for the new key after the insertion index
-            while (i > 0 && targetNode.keys[i].compareTo(key) > 0) {
+            while (i >= 0 && targetNode.keys[i].compareTo(key) > 0) {
                 targetNode.keys[i + 1] = targetNode.keys[i];
                 i--; // decrement insertion index until the correct one is found
             }
@@ -280,20 +280,18 @@ public class BTree implements BTreeInterface {
                 targetNode.keys[i].incrementFrequency();
             } else {
                 i++; // Increment 'i' by 1 to move to the next child pointer
-                targetNode = diskRead(targetNode.children[i]); // update targetNode to the next child
+                BTreeNode targetChild = diskRead(targetNode.children[i]); // update targetNode to the next child
                 // Split the node if it's full
-                if (targetNode.numKeys == 2 * degree - 1) {
-                    
-//TODO -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- RESUME HERE -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-                    splitChild(targetNode, i, nextTarget);
-//TODO -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- RESUME HERE -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                if (targetChild.numKeys == 2 * degree - 1) {
+                    splitChild(targetNode, i, targetChild);
 
                     // Find if the key goes into the child at i or i + 1
                     if (i < targetNode.numKeys && targetNode.keys[i].compareTo(key) < 0) {
-                        targetNode = diskRead(targetNode.children[i++]);
+                        i++;
+                        targetChild = diskRead(targetNode.children[i]);
                     }
                 }
-                insertNonFull(targetNode, key);
+                insertNonFull(targetChild, key);
             }
         }
     }
@@ -333,8 +331,9 @@ public class BTree implements BTreeInterface {
         // copy child pointers in the second half of the child node to the new child, if
         // not a leaf
         if (!child.isLeaf) {
-            for (int j = 0; j < degree - 1; j++) {
+            for (int j = 0; j < degree; j++) {
                 newChild.children[j] = child.children[degree + j];
+                child.children[degree + j] = 0;
             }
         }
         child.numKeys = degree - 1;

@@ -124,7 +124,11 @@ public class BTreeTest {
 
         for (int i = 0; i < 10; i++) {
             input[i] = i;
-            b.insert(new TreeObject(i));
+            if (i == 8) {
+                b.insert(new TreeObject(i));
+            } else {
+                b.insert(new TreeObject(i));
+            }
         }
 
         assertEquals(10, b.getSize());
