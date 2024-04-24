@@ -232,6 +232,12 @@ public class BTreeTest {
 
         b.insert(new TreeObject(input[7])); //Insert 'B'
 
+        // TODO delete this later
+        BTreeNode node1 = b.diskRead(28);
+        BTreeNode node2 = b.diskRead(28 + node1.getNodeSize());
+        BTreeNode node3 = b.diskRead(28 + node1.getNodeSize() + node1.getNodeSize());
+        //
+
         assertEquals(8, b.getSize());
         assertEquals(1, b.getHeight());
         assertEquals(3, b.getNumberOfNodes());
@@ -300,6 +306,12 @@ public class BTreeTest {
         b.insert(new TreeObject(6)); //F
         b.insert(new TreeObject(8)); //H
         b.insert(new TreeObject(12)); //L
+
+        // TODO delete this later
+        BTreeNode node1 = b.diskRead(28);
+        BTreeNode node2 = b.diskRead(28 + node1.getNodeSize());
+        BTreeNode node3 = b.diskRead(28 + node1.getNodeSize() + node1.getNodeSize());
+        //
 
         TreeObject obj = b.search(1); //search for 'A'
 
@@ -387,6 +399,12 @@ public class BTreeTest {
 
         //by inserting a duplicate into a non leaf node, another branch is tested.
         b.insert(new TreeObject(input[8])); //H
+
+        // TODO delete this later
+        BTreeNode node1 = b.diskRead(28);
+        BTreeNode node2 = b.diskRead(28 + node1.getNodeSize());
+        BTreeNode node3 = b.diskRead(28 + node1.getNodeSize() + node1.getNodeSize());
+        //
 
         TreeObject obj = b.search(8);
 

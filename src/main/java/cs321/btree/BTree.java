@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.Arrays;
 
 /**
  * Represents a B-Tree structure that provides efficient data insertion,
@@ -191,20 +192,35 @@ public class BTree implements BTreeInterface {
         long[] sortedKeys = null;
         try {
             sortedKeys = new long[(int) numKeys]; // initialize array with size: total keys in the B-Tree
-            int k = 0;
-            // loop through each node
-            BTreeNode node = diskRead((long) getMetaDataSize());
-            for (int i = 0; i < nodeCount; i++) {
-                for (int j = 0; j < node.numKeys; j++) {
-                    sortedKeys[k] = node.keys[j].getKey();
-                    k++;
-                }
-                node = diskRead(node.getLocation() + node.getNodeSize());
-            }
+            int index = 0;
+            traverseAndCollectKeys(root, sortedKeys, index);
+            Arrays.sort(sortedKeys);
         } catch (IOException e) {
-
+            System.out.println("This should never happen if this happened ur bad");
         }
         return sortedKeys;
+    }
+
+    /**
+     * Traverse the BTree and collect keys into the sortedKeys array.
+     * 
+     * @param node       The current node being visited
+     * @param sortedKeys The array to store sorted keys
+     * @param index      The current index in the sortedKeys array
+     */
+    private int traverseAndCollectKeys(BTreeNode node, long[] sortedKeys, int index) throws IOException {
+        if (node != null) {
+            for (int i = 0; i < node.numKeys; i++) {
+                sortedKeys[index++] = node.keys[i].getKey();
+            }
+            if (!node.isLeaf) {
+                for (int i = 0; i <= node.numKeys; i++) {
+                    index = traverseAndCollectKeys(diskRead(node.children[i]), sortedKeys, index);
+                }
+                return index;
+            }
+        }
+        return index;
     }
 
     @Override
@@ -217,7 +233,6 @@ public class BTree implements BTreeInterface {
     public void insert(TreeObject obj) throws IOException {
         if (root.numKeys >= (2 * degree - 1)) { // if the root node is full
             BTreeNode newNode = new BTreeNode(degree);
-            newNode.isLeaf = false;
             newNode.children[0] = root.getLocation(); // set first child to the old root
             newNode.setLocation(getMetaDataSize() + newNode.getNodeSize() * nodeCount);
             nodeCount++;
@@ -233,37 +248,53 @@ public class BTree implements BTreeInterface {
     private void insertNonFull(BTreeNode targetNode, TreeObject key) throws IOException {
         int i = targetNode.numKeys - 1; // Initialize an insertion index
         if (targetNode.isLeaf) {
-            while (i >= 0 && targetNode.keys[i].compareTo(key) > 0) {
-                i--;
+            // Shift keys to make room for the new key after the insertion index
+            while (i > 0 && targetNode.keys[i].compareTo(key) > 0) {
+                targetNode.keys[i + 1] = targetNode.keys[i];
+                i--; // decrement insertion index until the correct one is found
             }
+
             // Insert the key into the node if there are no duplicates, otherwise increment
             // the key's frequency
-            // if (targetNode.keys[i].compareTo(key) != 0) {
-            targetNode.keys[i + 1] = key;
-            targetNode.numKeys++;
-            numKeys++;
-            diskWrite(targetNode);
-            // } else {
-            // targetNode.keys[i].incrementFrequency();
-            // }
-            // }
+            if (targetNode.numKeys != 0) {
+                if (targetNode.keys[i].compareTo(key) != 0) {
+                    targetNode.keys[i + 1] = key;
+                    targetNode.numKeys++;
+                    numKeys++;
+                    diskWrite(targetNode);
+                } else {
+                    targetNode.keys[i].incrementFrequency();
+                }
+            } else {
+                targetNode.keys[0] = key;
+                targetNode.numKeys++;
+                numKeys++;
+                diskWrite(targetNode);
+            }
         } else {
             while (i >= 0 && targetNode.keys[i].compareTo(key) > 0) {
                 i--;
             }
-            i++; // Increment 'i' by 1 to move to the next child pointer
-            BTreeNode nextTarget = diskRead(targetNode.children[i]);
-            // Split the node if it's full
-            if (nextTarget.numKeys == 2 * degree - 1) {
-                splitChild(targetNode, i, nextTarget);
-            }
-            // increment 'i' once more if key > the median key in the new node
-            if (i < targetNode.numKeys && targetNode.keys[i].compareTo(key) < 0) {
-                i++;
-                nextTarget = diskRead(targetNode.children[i]);
-            }
+            // check for duplicates
+            if (i >= 0 && targetNode.keys[i].compareTo(key) == 0) {
+                targetNode.keys[i].incrementFrequency();
+            } else {
+                i++; // Increment 'i' by 1 to move to the next child pointer
+                targetNode = diskRead(targetNode.children[i]); // update targetNode to the next child
+                // Split the node if it's full
+                if (targetNode.numKeys == 2 * degree - 1) {
+                    
+//TODO -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- RESUME HERE -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                    splitChild(targetNode, i, nextTarget);
+//TODO -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- RESUME HERE -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-            insertNonFull(nextTarget, key);
+                    // Find if the key goes into the child at i or i + 1
+                    if (i < targetNode.numKeys && targetNode.keys[i].compareTo(key) < 0) {
+                        targetNode = diskRead(targetNode.children[i++]);
+                    }
+                }
+                insertNonFull(targetNode, key);
+            }
         }
     }
 
@@ -277,22 +308,23 @@ public class BTree implements BTreeInterface {
      * @param child             The child node to split.
      */
     private void splitChild(BTreeNode parent, int childPointerIndex, BTreeNode child) throws IOException {
+        parent.isLeaf = false;
         // Initialize the new child node
         BTreeNode newChild = new BTreeNode(degree);
         newChild.isLeaf = child.isLeaf;
         newChild.numKeys = degree - 1;
         newChild.setLocation(getMetaDataSize() + newChild.getNodeSize() * nodeCount);
 
-        // find the medianKey in the older child node
+        // find the median key in the older child node
         TreeObject medianKey = child.keys[degree - 1];
+        child.keys[degree - 1] = null; // clear the median key
 
         // copy keys in the second half of the child node to the new child
-        for (int j = 0; j < degree - 2; j++) {
-            //if (child.keys[degree + j] != medianKey) { // do not insert median key, as it will be moved to the parent
-                                                       // node
+        for (int j = 0; j < degree - 1; j++) {
+            if (child.keys[degree + j] != medianKey) { // do not insert median key, as it will be moved to the parent node
                 newChild.keys[j] = child.keys[degree + j];
-            //}
-            //child.keys[degree + j] = null; // clear the object in the older child
+            }
+            child.keys[degree + j] = null; // clear the object in the older child
         }
 
         // update number of keys in the older child
@@ -319,8 +351,12 @@ public class BTree implements BTreeInterface {
         }
         // Insert the median key from the child node into the correct position in the parent node
         parent.keys[childPointerIndex] = medianKey;
-        // parent.numKeys++;
+        parent.numKeys++;
         nodeCount++;
+
+        // Ensure both child nodes are pointing to their parent
+        child.setParent(parent.getLocation());
+        newChild.setParent(parent.getLocation());
 
         diskWrite(child);
         diskWrite(newChild);
