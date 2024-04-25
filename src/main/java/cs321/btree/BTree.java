@@ -271,7 +271,7 @@ public class BTree implements BTreeInterface {
                 numKeys++;
                 diskWrite(targetNode);
             }
-        } else {
+        } else { // Handle non-leaf nodes
             while (i >= 0 && targetNode.keys[i].compareTo(key) > 0) {
                 i--;
             }
@@ -283,6 +283,12 @@ public class BTree implements BTreeInterface {
                 BTreeNode targetChild = diskRead(targetNode.children[i]); // update targetNode to the next child
                 // Split the node if it's full
                 if (targetChild.numKeys == 2 * degree - 1) {
+                    // Before splitting, make sure the child does not contain the duplicate
+                    if (targetChild.keys[i].compareTo(key) == 0) {
+                        targetChild.keys[i].incrementFrequency();
+                        diskWrite(targetChild);
+                        return;
+                    }
                     splitChild(targetNode, i, targetChild);
 
                     // Find if the key goes into the child at i or i + 1
@@ -382,18 +388,26 @@ public class BTree implements BTreeInterface {
      * @throws IOException
      */
     private TreeObject recursiveSearch(BTreeNode node, long key) throws IOException {
+        if (node == null || node.numKeys == 0) {
+            return null;  // Return null if the node is null or empty
+        }
+
         int i = 0;
-        while (i <= node.numKeys && key < node.keys[i].getKey()) {
+        while (i < node.numKeys && key > node.keys[i].getKey()) {
             i++;
         }
-        if (i <= node.numKeys && key == node.keys[i].getKey()) {
+        if (i < node.numKeys && key == node.keys[i].getKey()) {
             return node.keys[i];
         }
         if (node.isLeaf) {
             return null; // not found
         } else {
-            BTreeNode nextNode = diskRead(node.getLocation() + node.getNodeSize());
-            return recursiveSearch(nextNode, key);
+            BTreeNode nextNode = diskRead(node.children[i]);
+            TreeObject foundKey = recursiveSearch(nextNode, key);
+            if (foundKey == null) { // not found so go to the other child
+                foundKey = recursiveSearch(diskRead(node.children[i - 1]), key);
+            }
+            return foundKey;
         }
     }
 

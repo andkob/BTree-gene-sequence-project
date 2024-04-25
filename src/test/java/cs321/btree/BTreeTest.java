@@ -318,12 +318,6 @@ public class BTreeTest {
         b.insert(new TreeObject(8)); //H
         b.insert(new TreeObject(12)); //L
 
-        // TODO delete this later
-        BTreeNode node1 = b.diskRead(28);
-        BTreeNode node2 = b.diskRead(28 + node1.getNodeSize());
-        BTreeNode node3 = b.diskRead(28 + node1.getNodeSize() + node1.getNodeSize());
-        //
-
         TreeObject obj = b.search(1); //search for 'A'
 
         assertEquals(0, obj.compareTo(new TreeObject(1)));
@@ -446,11 +440,15 @@ public class BTreeTest {
             b.insert(new TreeObject(l));
         }
 
+        // BTreeNode node1 = b.diskRead(28);
+        // BTreeNode node2 = b.diskRead(28 + node1.getNodeSize());
+        // BTreeNode node3 = b.diskRead(28 + node1.getNodeSize() + node1.getNodeSize());
+
         TreeObject obj = b.search(8);
 
-        assertEquals(2, obj.getCount());
-
+        
         assertTrue(validateBTreeInserts(b, input));
+        assertEquals(2, obj.getCount());
     }
 
 
