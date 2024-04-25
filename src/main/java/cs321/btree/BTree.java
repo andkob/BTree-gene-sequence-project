@@ -256,7 +256,7 @@ public class BTree implements BTreeInterface {
 
             // Insert the key into the node if there are no duplicates, otherwise increment
             // the key's frequency
-            if (targetNode.numKeys != 0) {
+            if (i > -1) {
                 if (targetNode.keys[i].compareTo(key) != 0) {
                     targetNode.keys[i + 1] = key;
                     targetNode.numKeys++;
@@ -319,7 +319,7 @@ public class BTree implements BTreeInterface {
 
         // copy keys in the second half of the child node to the new child
         for (int j = 0; j < degree - 1; j++) {
-            if (child.keys[degree + j] != medianKey) { // do not insert median key, as it will be moved to the parent node
+            if (child.keys[degree + j] != medianKey) { // do not insert median key, as it will be moved to the parent node // TODO - remove this?
                 newChild.keys[j] = child.keys[degree + j];
             }
             child.keys[degree + j] = null; // clear the object in the older child
@@ -339,13 +339,13 @@ public class BTree implements BTreeInterface {
         child.numKeys = degree - 1;
         // Move child pointers in parent to make space for the pointer to the new child
         // The new child will be placed after the older child (childPointerIndex + 1)
-        for (int j = parent.numKeys; j > childPointerIndex + 1; j--) {
+        for (int j = parent.numKeys; j >= childPointerIndex + 1; j--) {
             parent.children[j + 1] = parent.children[j];
         }
         parent.children[childPointerIndex + 1] = newChild.getLocation();
 
         // Move keys in the parent node to make space for the median key from the child node
-        for (int j = parent.numKeys - 1; j > childPointerIndex; j--) {
+        for (int j = parent.numKeys - 1; j >= childPointerIndex; j--) {
             parent.keys[j + 1] = parent.keys[j];
         }
         // Insert the median key from the child node into the correct position in the parent node

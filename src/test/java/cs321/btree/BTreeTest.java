@@ -124,11 +124,7 @@ public class BTreeTest {
 
         for (int i = 0; i < 10; i++) {
             input[i] = i;
-            if (i == 8) {
-                b.insert(new TreeObject(i));
-            } else {
-                b.insert(new TreeObject(i));
-            }
+            b.insert(new TreeObject(i));
         }
 
         assertEquals(10, b.getSize());
@@ -151,8 +147,19 @@ public class BTreeTest {
 
         long[] input = new long[10];
 
+        // for (int i = 10; i > 4; i--) {
+        //     b.insert(new TreeObject(i));
+        // }
+        // BTreeNode node1 = b.diskRead(28);
+        // BTreeNode node2 = b.diskRead(node1.getLocation() + node1.getNodeSize());
+        // BTreeNode node3 = b.diskRead(node2.getLocation() + node1.getNodeSize());
+        // BTreeNode node4 = b.diskRead(node3.getLocation() + node1.getNodeSize());
+
         for (int i = 10; i > 0; i--) {
             input[10 - i] = i;
+            if (i == 5)
+            b.insert(new TreeObject(i));
+            else
             b.insert(new TreeObject(i));
         }
 
