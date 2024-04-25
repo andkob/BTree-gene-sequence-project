@@ -19,17 +19,15 @@ import java.util.Arrays;
  */
 public class BTree implements BTreeInterface {
 
-    static private final int OPTIMAL_DEGREE = 85; // calculated optimal degree t // TODO recalculate with BTreeNode +4
-                                                  // bytes
+    static private final int OPTIMAL_DEGREE = 101; // calculated optimal degree t
 
     private long size; // BTree size in Bytes
-    private int height;
-    private int degree;
-    private int nodeCount;
-    private BTreeNode root;
-    private FileChannel disk; // named this 'disk' for simplicity. All I/O operations should be done through
-                              // this channel.
-    private int numKeys;
+    private int height; // Height of the tree
+    private int degree; // Degree of the tree
+    private int nodeCount; // Total number of BTreeNodes
+    private BTreeNode root; // Reference to the root node in the file
+    private FileChannel disk; // Named this 'disk' for simplicity. All I/O operations should be done through this file channel.
+    private int numKeys; // Total number of keys in the BTree
 
     /**
      * Constructs a BTree using the default degree and initializes it from a file
@@ -38,7 +36,7 @@ public class BTree implements BTreeInterface {
      * @param filePath the path to the file that stores the B-Tree on disk
      */
     public BTree(String filePath) {
-        this(OPTIMAL_DEGREE, filePath, 0, false, 0); //idk why this was giving me an error
+        this(OPTIMAL_DEGREE, filePath, 0, false, 0);
     }
     
     /**
@@ -211,16 +209,13 @@ public class BTree implements BTreeInterface {
      * Returns a sorted array of all the keys in this B-Tree
      * @return Array of each key in this B-Tree, sorted in non-decreasing order
      */
-    public long[] getSortedKeyArray() {
+    public long[] getSortedKeyArray() throws IOException {
         long[] sortedKeys = null;
-        try {
-            sortedKeys = new long[(int) numKeys]; // initialize array with size: total keys in the B-Tree
-            int index = 0;
-            traverseAndCollectKeys(root, sortedKeys, index);
-            Arrays.sort(sortedKeys);
-        } catch (IOException e) {
-            System.out.println("This should never happen if this happened ur bad");
-        }
+        sortedKeys = new long[(int) numKeys]; // initialize array with size: total keys in the B-Tree
+        int index = 0;
+        // traverse and collect keys
+        traverseAndCollectKeys(root, sortedKeys, index);
+        Arrays.sort(sortedKeys); // ensure keys are sorted
         return sortedKeys;
     }
 
@@ -265,12 +260,15 @@ public class BTree implements BTreeInterface {
             splitChild(newNode, 0, root);
             root = newNode; // update root reference
             insertNonFull(newNode, obj);
-        } else {
+        } else { // not full
             insertNonFull(root, obj);
         }
     }
 
     /**
+     * Insert a given sequence in the B-Tree. If the sequence already exists in the B-Tree,
+     * the frequency count is incremented. Otherwise a new node is inserted following the
+     * B-Tree insertion algorithm.
      * 
      * @param targetNode
      * @param key
@@ -285,9 +283,8 @@ public class BTree implements BTreeInterface {
                 i--; // decrement insertion index until the correct one is found
             }
 
-            // Insert the key into the node if there are no duplicates, otherwise increment
-            // the key's frequency
-            if (i > -1) {
+            // Insert the key into the node if there are no duplicates, otherwise increment the key's frequency
+            if (i > -1) { // if i = -1, the node is either empty or the key goes in keys[0] TODO - not checking duplicate at [0], but test for this before implementing
                 if (targetNode.keys[i].compareTo(key) != 0) {
                     targetNode.keys[i + 1] = key;
                     targetNode.numKeys++;
@@ -314,13 +311,15 @@ public class BTree implements BTreeInterface {
                 BTreeNode targetChild = diskRead(targetNode.children[i]); // update targetNode to the next child
                 // Split the node if it's full
                 if (targetChild.numKeys == 2 * degree - 1) {
-                    // Before splitting, make sure the child does not contain the duplicate
+
+                    // Edge Case Check: Before splitting, make sure the child does not contain the duplicate
                     if (targetChild.keys[i].compareTo(key) == 0) {
+                        // if full, increment the key's frequency and rewrite it to the disk
                         targetChild.keys[i].incrementFrequency();
                         diskWrite(targetChild);
-                        BTreeNode test_node = diskRead(targetChild.getLocation());
-                        return;
+                        return; // exit before inserting
                     }
+
                     splitChild(targetNode, i, targetChild);
 
                     // Find if the key goes into the child at i or i + 1
@@ -344,12 +343,14 @@ public class BTree implements BTreeInterface {
      * @param child             The child node to split.
      */
     private void splitChild(BTreeNode parent, int childPointerIndex, BTreeNode child) throws IOException {
-        parent.isLeaf = false;
+        parent.isLeaf = false; // parent will gain at least one child, so ensure it is set to a leaf
+        
         // Initialize the new child node
         BTreeNode newChild = new BTreeNode(degree);
         newChild.isLeaf = child.isLeaf;
         newChild.numKeys = degree - 1;
-        newChild.setLocation(getMetaDataSize() + newChild.getNodeSize() * nodeCount);
+        newChild.setLocation(getMetaDataSize() + newChild.getNodeSize() * nodeCount); // set location to the next open spot in the file
+        nodeCount++;
 
         // find the median key in the older child node
         TreeObject medianKey = child.keys[degree - 1];
@@ -357,24 +358,19 @@ public class BTree implements BTreeInterface {
 
         // copy keys in the second half of the child node to the new child
         for (int j = 0; j < degree - 1; j++) {
-            if (child.keys[degree + j] != medianKey) { // do not insert median key, as it will be moved to the parent node // TODO - remove this?
-                newChild.keys[j] = child.keys[degree + j];
-            }
+            newChild.keys[j] = child.keys[degree + j];
             child.keys[degree + j] = null; // clear the object in the older child
         }
 
-        // update number of keys in the older child
-        // child.numKeys -= newChild.numKeys;
-
-        // copy child pointers in the second half of the child node to the new child, if
-        // not a leaf
+        // copy child pointers in the second half of the child node to the new child, if not a leaf
         if (!child.isLeaf) {
             for (int j = 0; j < degree; j++) {
                 newChild.children[j] = child.children[degree + j];
                 child.children[degree + j] = 0;
             }
         }
-        child.numKeys = degree - 1;
+        child.numKeys = degree - 1; // update child's numKeys
+
         // Move child pointers in parent to make space for the pointer to the new child
         // The new child will be placed after the older child (childPointerIndex + 1)
         for (int j = parent.numKeys; j >= childPointerIndex + 1; j--) {
@@ -386,15 +382,16 @@ public class BTree implements BTreeInterface {
         for (int j = parent.numKeys - 1; j >= childPointerIndex; j--) {
             parent.keys[j + 1] = parent.keys[j];
         }
+
         // Insert the median key from the child node into the correct position in the parent node
         parent.keys[childPointerIndex] = medianKey;
         parent.numKeys++;
-        nodeCount++;
 
         // Ensure both child nodes are pointing to their parent
         child.setParent(parent.getLocation());
         newChild.setParent(parent.getLocation());
 
+        // Write all nodes to the disk
         diskWrite(child);
         diskWrite(newChild);
         diskWrite(parent);
