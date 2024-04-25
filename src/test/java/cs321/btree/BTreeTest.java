@@ -442,7 +442,7 @@ public class BTreeTest {
 
         // BTreeNode node1 = b.diskRead(28);
         // BTreeNode node2 = b.diskRead(28 + node1.getNodeSize());
-        // BTreeNode node3 = b.diskRead(28 + node1.getNodeSize() + node1.getNodeSize());
+        // BTreeNode node3 = b.diskRead(206);
 
         TreeObject obj = b.search(8);
 

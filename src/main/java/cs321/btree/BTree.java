@@ -119,7 +119,8 @@ public class BTree implements BTreeInterface {
         // Read Objects
         for (int i = 0; i < node.numKeys; i++) {
             long key = nodeBuffer.getLong(); // Read the key
-            node.keys[i] = new TreeObject(key); // Create a TreeObject and store the key
+            int frequency = nodeBuffer.getInt(); // read the key's frequency
+            node.keys[i] = new TreeObject(key, frequency); // Create a TreeObject with the data and store it
         }
 
         // Read child pointers if the node is not a leaf
@@ -152,6 +153,7 @@ public class BTree implements BTreeInterface {
         for (int i = 0; i < node.numKeys; i++) {
             if (node.keys[i] != null) {
                 buffer.putLong(node.keys[i].getKey());
+                buffer.putInt(node.keys[i].getCount());
             }
         }
 
@@ -287,6 +289,7 @@ public class BTree implements BTreeInterface {
                     if (targetChild.keys[i].compareTo(key) == 0) {
                         targetChild.keys[i].incrementFrequency();
                         diskWrite(targetChild);
+                        BTreeNode test_node = diskRead(targetChild.getLocation());
                         return;
                     }
                     splitChild(targetNode, i, targetChild);
