@@ -49,16 +49,25 @@ public class BTree implements BTreeInterface {
      * @param degree   the minimum degree of the BTree
      * @param filePath the path of the file to store the BTree
      */
-
-    @SuppressWarnings("resource") // raf must stay open
     public BTree(int degree, String filePath) {
         this(degree, filePath, 0, false, 0);
     }
     
     /**
-    * Fully loaded constructor
-    */
+     * Constructs a B-Tree from a specified file path and degree.
+     * If the file exists, it reads the B-Tree metadata and the root node from the file.
+     * Otherwise, it initializes a new empty B-Tree with a specified degree.
+     * This B-Tree has an option to use cache for faster I/O operations.
+     * 
+     * @param degree    The degree of the B-tree.
+     * @param filePath  The path to the file containing the B-tree data.
+     * @param seqLength The sequence length for encoding.
+     * @param useCache  Specifies whether to use caching.
+     * @param cacheSize The size of the cache, if caching is enabled.
+     */
+    @SuppressWarnings("resource") // raf must stay open
     public BTree(int degree, String filePath, int seqLength, boolean useCache, int cacheSize) {
+        // initialize fields
         this.size = 0;
         this.height = 0;
         this.degree = degree;
@@ -66,7 +75,7 @@ public class BTree implements BTreeInterface {
 
         File file = new File(filePath);
         try {
-            if (file.exists()) {
+            if (file.exists()) { // Read in data from the file
                 RandomAccessFile raf = new RandomAccessFile(file, "rw");
                 disk = raf.getChannel(); // initialize file channel with the unique FileChannel associated with the RAF
 
@@ -85,7 +94,7 @@ public class BTree implements BTreeInterface {
 
                 // Read root node from disk based on the rootPointer
                 root = diskRead(rootPointer);
-            } else {
+            } else { // Initialize a new file to store all the data for this B-Tree
                 file.createNewFile();
                 RandomAccessFile raf = new RandomAccessFile(file, "rw");
                 disk = raf.getChannel(); // initialize file channel with the unique FileChannel associated with the RAF
@@ -157,11 +166,11 @@ public class BTree implements BTreeInterface {
         buffer.putLong(node.getParentPointer()); // write the parent pointer
         buffer.putLong(node.getLocation()); // write the byte offset
 
-        // Write keys
+        // Write the data for each key (TreeObject)
         for (int i = 0; i < node.numKeys; i++) {
             if (node.keys[i] != null) {
-                buffer.putLong(node.keys[i].getKey());
-                buffer.putInt(node.keys[i].getCount());
+                buffer.putLong(node.keys[i].getKey()); // write the DNA sequence value
+                buffer.putInt(node.keys[i].getCount()); // write the frequency of the key
             }
         }
 
@@ -180,7 +189,7 @@ public class BTree implements BTreeInterface {
 
     @Override
     public long getSize() {
-        return numKeys; // each node has 2t - 1 keys
+        return numKeys;
     }
 
     @Override
@@ -198,6 +207,10 @@ public class BTree implements BTreeInterface {
         return height;
     }
 
+    /**
+     * Returns a sorted array of all the keys in this B-Tree
+     * @return Array of each key in this B-Tree, sorted in non-decreasing order
+     */
     public long[] getSortedKeyArray() {
         long[] sortedKeys = null;
         try {
@@ -241,12 +254,14 @@ public class BTree implements BTreeInterface {
 
     @Override
     public void insert(TreeObject obj) throws IOException {
-        if (root.numKeys >= (2 * degree - 1)) { // if the root node is full
+        if (root.numKeys >= (2 * degree - 1)) {  // check if the root node is full
+            // Initialize a new node to act as the new root
             BTreeNode newNode = new BTreeNode(degree);
             newNode.children[0] = root.getLocation(); // set first child to the old root
             newNode.setLocation(getMetaDataSize() + newNode.getNodeSize() * nodeCount);
             nodeCount++;
             height++;
+            // Split the full root and continue the insert operation
             splitChild(newNode, 0, root);
             root = newNode; // update root reference
             insertNonFull(newNode, obj);
@@ -255,6 +270,12 @@ public class BTree implements BTreeInterface {
         }
     }
 
+    /**
+     * 
+     * @param targetNode
+     * @param key
+     * @throws IOException
+     */
     private void insertNonFull(BTreeNode targetNode, TreeObject key) throws IOException {
         int i = targetNode.numKeys - 1; // Initialize an insertion index
         if (targetNode.isLeaf) {
