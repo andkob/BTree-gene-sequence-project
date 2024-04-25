@@ -16,10 +16,16 @@ import java.util.Scanner;
 import java.io.PrintWriter;
 
 
-public class GeneBankSearchDatabase
-{
+public class GeneBankSearchDatabase {
 
     public static void main(String[] args) throws Exception {
+        new GeneBankSearchDatabase(args);
+    }
+
+    private String url;
+    private String query;
+
+    public GeneBankSearchDatabase(String args[]) {
 
         GeneBankSearchDatabaseArguments searchArgs = new GeneBankSearchDatabaseArguments(args);
         if (searchArgs.validate() == false) {
@@ -29,8 +35,8 @@ public class GeneBankSearchDatabase
         //temporary code to create database to search
         //TODO remove/edit when CreateBTree implemented
 
-        String url = "jdbc:sqlite:" + searchArgs.getDatabasePath();
-        String query = "results/query-results/" + searchArgs.getQueryFile();
+        url = "jdbc:sqlite:" + searchArgs.getDatabasePath();
+        query = "results/query-results/" + searchArgs.getQueryFile();
         Connection connection = null;
 
         try {
@@ -57,7 +63,6 @@ public class GeneBankSearchDatabase
 
             //end delete
 
-            //TODO update for specified query
             f = new File(query);
             s = new Scanner(f);
 
@@ -96,5 +101,14 @@ public class GeneBankSearchDatabase
         }
 
     }
+
+    public String getURL() {
+        return url;
+    }
+
+    public String getQuery() {
+        return query;
+    }
+
 
 }
