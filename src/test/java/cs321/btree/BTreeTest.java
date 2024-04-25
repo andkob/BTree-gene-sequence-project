@@ -147,8 +147,19 @@ public class BTreeTest {
 
         long[] input = new long[10];
 
+        // for (int i = 10; i > 4; i--) {
+        //     b.insert(new TreeObject(i));
+        // }
+        // BTreeNode node1 = b.diskRead(28);
+        // BTreeNode node2 = b.diskRead(node1.getLocation() + node1.getNodeSize());
+        // BTreeNode node3 = b.diskRead(node2.getLocation() + node1.getNodeSize());
+        // BTreeNode node4 = b.diskRead(node3.getLocation() + node1.getNodeSize());
+
         for (int i = 10; i > 0; i--) {
             input[10 - i] = i;
+            if (i == 5)
+            b.insert(new TreeObject(i));
+            else
             b.insert(new TreeObject(i));
         }
 
@@ -231,6 +242,12 @@ public class BTreeTest {
         assertEquals(1, b.getNumberOfNodes());
 
         b.insert(new TreeObject(input[7])); //Insert 'B'
+
+        // TODO delete this later
+        BTreeNode node1 = b.diskRead(28);
+        BTreeNode node2 = b.diskRead(28 + node1.getNodeSize());
+        BTreeNode node3 = b.diskRead(28 + node1.getNodeSize() + node1.getNodeSize());
+        //
 
         assertEquals(8, b.getSize());
         assertEquals(1, b.getHeight());
@@ -388,6 +405,12 @@ public class BTreeTest {
         //by inserting a duplicate into a non leaf node, another branch is tested.
         b.insert(new TreeObject(input[8])); //H
 
+        // TODO delete this later
+        BTreeNode node1 = b.diskRead(28);
+        BTreeNode node2 = b.diskRead(28 + node1.getNodeSize());
+        BTreeNode node3 = b.diskRead(28 + node1.getNodeSize() + node1.getNodeSize());
+        //
+
         TreeObject obj = b.search(8);
 
         assertEquals(2, obj.getCount());
@@ -417,11 +440,15 @@ public class BTreeTest {
             b.insert(new TreeObject(l));
         }
 
+        // BTreeNode node1 = b.diskRead(28);
+        // BTreeNode node2 = b.diskRead(28 + node1.getNodeSize());
+        // BTreeNode node3 = b.diskRead(206);
+
         TreeObject obj = b.search(8);
 
-        assertEquals(2, obj.getCount());
-
+        
         assertTrue(validateBTreeInserts(b, input));
+        assertEquals(2, obj.getCount());
     }
 
 
