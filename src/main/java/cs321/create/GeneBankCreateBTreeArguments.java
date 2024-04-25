@@ -86,4 +86,28 @@ public class GeneBankCreateBTreeArguments
                 ", debugLevel=" + debugLevel +
                 '}';
     }
+
+	public String getGbkFileName() {
+		return this.gbkFileName;
+	}
+
+	public int getDegree() {
+		return this.degree;
+	}
+
+	public int getSubsequenceLength() {
+		return this.subsequenceLength;
+	}
+
+	public boolean getUseCache() {
+		return this.useCache;
+	}
+
+	public int getCacheSize() {
+		return this.cacheSize;
+	}
+
+	public int getDebugLevel() {
+		return this.debugLevel;
+	}
 }
