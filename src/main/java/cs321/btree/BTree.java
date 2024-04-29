@@ -9,8 +9,7 @@ import java.nio.channels.FileChannel;
 import java.util.Arrays;
 
 /**
- * Represents a B-Tree structure that provides efficient data insertion,
- * deletion,
+ * Represents a B-Tree structure that provides efficient data insertion, deletion,
  * and lookup. This implementation specifically supports disk-based operations
  * to accommodate large data sets that do not fit into main memory.
  * 
@@ -284,7 +283,7 @@ public class BTree implements BTreeInterface {
             }
 
             // Insert the key into the node if there are no duplicates, otherwise increment the key's frequency
-            if (i > -1) { // if i = -1, the node is either empty or the key goes in keys[0] TODO - not checking duplicate at [0], but test for this before implementing
+            if (i > -1) { // if i = -1, the node is empty
                 if (targetNode.keys[i].compareTo(key) != 0) {
                     targetNode.keys[i + 1] = key;
                     targetNode.numKeys++;
@@ -308,7 +307,7 @@ public class BTree implements BTreeInterface {
                 targetNode.keys[i].incrementFrequency();
             } else {
                 i++; // Increment 'i' by 1 to move to the next child pointer
-                BTreeNode targetChild = diskRead(targetNode.children[i]); // update targetNode to the next child
+                BTreeNode targetChild = diskRead(targetNode.children[i]); // get the next child
                 // Split the node if it's full
                 if (targetChild.numKeys == 2 * degree - 1) {
 
@@ -338,8 +337,7 @@ public class BTree implements BTreeInterface {
      * up to the child's parent.
      *
      * @param parent            The parent node whose child is being split.
-     * @param childPointerIndex The index of the child node to split in the parent's
-     *                          children array.
+     * @param childPointerIndex The index of the child node to split in the parent's children array.
      * @param child             The child node to split.
      */
     private void splitChild(BTreeNode parent, int childPointerIndex, BTreeNode child) throws IOException {
@@ -366,7 +364,7 @@ public class BTree implements BTreeInterface {
         if (!child.isLeaf) {
             for (int j = 0; j < degree; j++) {
                 newChild.children[j] = child.children[degree + j];
-                child.children[degree + j] = 0;
+                child.children[degree + j] = -1; // clear the child pointer in the older child
             }
         }
         child.numKeys = degree - 1; // update child's numKeys
@@ -518,5 +516,19 @@ public class BTree implements BTreeInterface {
         // write the data to the disk
         buffer.flip();
         disk.write(buffer);
+    }
+
+    /**
+     * Closes the file channel associated with this B-Tree.
+     * This should be called whenever you are done with this B-Tree
+     * to prevent resource leaks and ensure proper file deletion.
+     */
+    public void close() {
+        try {
+            disk.close();
+        } catch (IOException e) {
+            System.out.println("Error when trying to close file channel");
+            e.printStackTrace();
+        }
     }
 }

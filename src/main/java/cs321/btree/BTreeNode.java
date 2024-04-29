@@ -25,6 +25,11 @@ public class BTreeNode {
         location = 0;
         keys = new TreeObject[2 * degree - 1];
         children = new long[2 * degree];
+
+        // set each initial pointer to -1
+        for (int i = 0; i < children.length; i++) {
+            children[i] = -1;
+        }
     }
 
     /**

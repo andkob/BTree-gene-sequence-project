@@ -1,6 +1,6 @@
 package cs321.btree;
 
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -26,10 +26,7 @@ import static org.junit.Assert.*;
  */
 public class BTreeTest {
 
-    /**
-     * Use the same filename for each time a BTree is created.
-     */
-    private static String testFilename = "Test_BTree.tmp";
+    public static final int NUM_BTREE_TESTS = 15; // number of tests that use a B-Tree
 
     /**
      * Avoid some test errors if the test file failed to clean up
@@ -38,16 +35,16 @@ public class BTreeTest {
     @BeforeClass
     public static void beforeAll() {
 
-        deleteTestFile(testFilename);
+        deleteTestFiles();
     }
 
     /**
-     * After each test case, remove the test file.
+     * After all tests, remove all test files.
      */
-    @After
-    public void cleanUpTests() {
+    @AfterClass
+    public static void cleanUpTests() {
 
-        deleteTestFile(testFilename);
+        deleteTestFiles();
     }
 
     /**
@@ -57,8 +54,8 @@ public class BTreeTest {
      * @throws BTreeException Exception thrown when BTree encounters an unexpected problem
      */
     @Test
-    public void testBTreeCreate() throws BTreeException{
-
+    public void testBTreeCreate() throws BTreeException, IOException {
+        String testFilename = "Test_BTree_1.tmp";
 
         BTree b = new BTree(testFilename);
 
@@ -70,7 +67,7 @@ public class BTreeTest {
 
         //will have only 1 node, the root
         assertEquals(1, b.getNumberOfNodes());
-
+        b.close();
     }
 
     /**
@@ -80,11 +77,12 @@ public class BTreeTest {
      */
     @Test
     public void testBTreeCreateDegree () throws BTreeException {
+        String testFilename = "Test_BTree_2.tmp";
 
         BTree b = new BTree(3, testFilename);
 
         assertEquals(3, b.getDegree());
-
+        b.close();
     }
 
     /**
@@ -98,6 +96,7 @@ public class BTreeTest {
      */
     @Test
     public void testInsertOneKey() throws BTreeException, IOException {
+        String testFilename = "Test_BTree_3.tmp";
 
         BTree b = new BTree(2, testFilename);
 
@@ -107,6 +106,7 @@ public class BTreeTest {
         assertEquals(0, b.getHeight());
 
         assertTrue(validateBTreeInserts(b, new long[]{1}));
+        b.close();
     }
 
     /**
@@ -116,7 +116,8 @@ public class BTreeTest {
      * @throws IOException Exception thrown when testing fails due to IO errors
      */
     @Test
-    public void testInsertTenKeys() throws BTreeException, IOException{
+    public void testInsertTenKeys() throws BTreeException, IOException {
+        String testFilename = "Test_BTree_4.tmp";
 
         BTree b = new BTree(2, testFilename);
 
@@ -131,6 +132,7 @@ public class BTreeTest {
         assertEquals(2, b.getHeight());
 
         assertTrue(validateBTreeInserts(b, input));
+        b.close();
     }
 
 
@@ -142,24 +144,14 @@ public class BTreeTest {
      */
     @Test
     public void testInsertTenKeysReverseOrder() throws BTreeException, IOException {
+        String testFilename = "Test_BTree_5.tmp";
 
         BTree b = new BTree(2, testFilename);
 
         long[] input = new long[10];
 
-        // for (int i = 10; i > 4; i--) {
-        //     b.insert(new TreeObject(i));
-        // }
-        // BTreeNode node1 = b.diskRead(28);
-        // BTreeNode node2 = b.diskRead(node1.getLocation() + node1.getNodeSize());
-        // BTreeNode node3 = b.diskRead(node2.getLocation() + node1.getNodeSize());
-        // BTreeNode node4 = b.diskRead(node3.getLocation() + node1.getNodeSize());
-
         for (int i = 10; i > 0; i--) {
             input[10 - i] = i;
-            if (i == 5)
-            b.insert(new TreeObject(i));
-            else
             b.insert(new TreeObject(i));
         }
 
@@ -167,6 +159,7 @@ public class BTreeTest {
         assertEquals(2, b.getHeight());
 
         assertTrue(validateBTreeInserts(b, input));
+        b.close();
     }
 
 
@@ -179,6 +172,7 @@ public class BTreeTest {
      */
     @Test
     public void testInsertTenDuplicates() throws BTreeException, IOException {
+        String testFilename = "Test_BTree_6.tmp";
 
         BTree b = new BTree(2, testFilename);
 
@@ -190,6 +184,7 @@ public class BTreeTest {
         assertEquals(0, b.getHeight());
 
         assertTrue(validateBTreeInserts(b, new long[]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1}));
+        b.close();
     }
 
 
@@ -201,6 +196,7 @@ public class BTreeTest {
      */
     @Test
     public void testInsertTenThousandObjects() throws BTreeException, IOException {
+        String testFilename = "Test_BTree_7.tmp";
 
         BTree b = new BTree(2, testFilename);
 
@@ -215,6 +211,7 @@ public class BTreeTest {
         assertEquals(12, b.getHeight());
 
         assertTrue(validateBTreeInserts(b, input));
+        b.close();
     }
 
     /**
@@ -227,6 +224,7 @@ public class BTreeTest {
      */
     @Test
     public void testCLRSExample18_6() throws BTreeException, IOException {
+        String testFilename = "Test_BTree_8.tmp";
 
         BTree b = new BTree(4, testFilename);
 
@@ -243,17 +241,12 @@ public class BTreeTest {
 
         b.insert(new TreeObject(input[7])); //Insert 'B'
 
-        // TODO delete this later
-        BTreeNode node1 = b.diskRead(28);
-        BTreeNode node2 = b.diskRead(28 + node1.getNodeSize());
-        BTreeNode node3 = b.diskRead(28 + node1.getNodeSize() + node1.getNodeSize());
-        //
-
         assertEquals(8, b.getSize());
         assertEquals(1, b.getHeight());
         assertEquals(3, b.getNumberOfNodes());
 
         assertTrue(validateBTreeInserts(b, input));
+        b.close();
     }
 
     /**
@@ -264,13 +257,14 @@ public class BTreeTest {
      */
     @Test
     public void testSearchEmptyTree() throws BTreeException, IOException {
+        String testFilename = "Test_BTree_9.tmp";
 
         BTree b = new BTree(2, testFilename);
 
         TreeObject t = b.search(1L);
 
         assertNull(t);
-
+        b.close();
     }
 
     /**
@@ -283,6 +277,7 @@ public class BTreeTest {
      */
     @Test
     public void testSearchOneKey() throws BTreeException, IOException {
+        String testFilename = "Test_BTree_10.tmp";
 
         long key = 1L;
         TreeObject t = new TreeObject(key);
@@ -294,7 +289,7 @@ public class BTreeTest {
         TreeObject obj = b.search(key);
 
         assertEquals(0, t.compareTo(obj));
-
+        b.close();
     }
 
 
@@ -309,6 +304,7 @@ public class BTreeTest {
      */
     @Test
     public void testSearchToNotLeaf() throws BTreeException, IOException {
+        String testFilename = "Test_BTree_11.tmp";
 
         BTree b = new BTree(2, testFilename); //Different degree than CLRS 18.6!
 
@@ -321,6 +317,7 @@ public class BTreeTest {
         TreeObject obj = b.search(1); //search for 'A'
 
         assertEquals(0, obj.compareTo(new TreeObject(1)));
+        b.close();
     }
 
     /**
@@ -331,6 +328,7 @@ public class BTreeTest {
      */
     @Test
     public void testTreeObjectCount() throws BTreeException, IOException {
+        String testFilename = "Test_BTree_12.tmp";
 
         long key = 1L;
 
@@ -341,6 +339,7 @@ public class BTreeTest {
         TreeObject obj = b.search(key);
 
         assertEquals(1, obj.getCount());
+        b.close();
     }
 
     /**
@@ -351,6 +350,7 @@ public class BTreeTest {
      */
     @Test
     public void testCountingTreeObjectDuplicates() throws BTreeException, IOException {
+        String testFilename = "Test_BTree_13.tmp";
 
         long duplicateKey = 1L;
 
@@ -363,6 +363,7 @@ public class BTreeTest {
         TreeObject obj = b.search(duplicateKey);
 
         assertEquals(10, obj.getCount());
+        b.close();
     }
 
     /**
@@ -370,13 +371,13 @@ public class BTreeTest {
      */
     @Test
     public void testSettingTreeObjectCount() {
+
         long key = 1L;
         int count = 12;
 
         TreeObject t = new TreeObject(key, count);
 
         assertEquals(count, t.getCount());
-
     }
 
 
@@ -392,6 +393,7 @@ public class BTreeTest {
      */
     @Test
     public void testInsertToNotLeaf() throws BTreeException, IOException {
+        String testFilename = "Test_BTree_14.tmp";
 
         BTree b = new BTree(4, testFilename);
 
@@ -405,17 +407,12 @@ public class BTreeTest {
         //by inserting a duplicate into a non leaf node, another branch is tested.
         b.insert(new TreeObject(input[8])); //H
 
-        // TODO delete this later
-        BTreeNode node1 = b.diskRead(28);
-        BTreeNode node2 = b.diskRead(28 + node1.getNodeSize());
-        BTreeNode node3 = b.diskRead(28 + node1.getNodeSize() + node1.getNodeSize());
-        //
-
         TreeObject obj = b.search(8);
 
         assertEquals(2, obj.getCount());
 
         assertTrue(validateBTreeInserts(b, input));
+        b.close();
     }
 
 
@@ -430,6 +427,7 @@ public class BTreeTest {
      */
     @Test
     public void testInsertToNotLeafFullChild() throws BTreeException, IOException {
+        String testFilename = "Test_BTree_15.tmp";
 
         BTree b = new BTree(2, testFilename); //Different degree than CLRS 18.6!
 
@@ -440,15 +438,12 @@ public class BTreeTest {
             b.insert(new TreeObject(l));
         }
 
-        // BTreeNode node1 = b.diskRead(28);
-        // BTreeNode node2 = b.diskRead(28 + node1.getNodeSize());
-        // BTreeNode node3 = b.diskRead(206);
-
         TreeObject obj = b.search(8);
 
         
         assertTrue(validateBTreeInserts(b, input));
         assertEquals(2, obj.getCount());
+        b.close();
     }
 
 
@@ -548,11 +543,14 @@ public class BTreeTest {
      *                 Pass a filename only to a file that should be deleted
      *                 or could be restored.
      */
-    private static void deleteTestFile(String filename) {
-        File file = new File(filename);
-        if (file.exists() && !file.isDirectory()) {
-            System.out.println("Deleting " + filename);
-            file.delete();
+    private static void deleteTestFiles() {
+        for (int i = 1; i <= NUM_BTREE_TESTS; i++) {
+            String filename = "Test_BTree_" + i + ".tmp";
+            File file = new File(filename);
+            if (file.exists() && !file.isDirectory()) {
+                System.out.println("Deleting " + filename);
+                file.delete();
+            }
         }
     }
 }
