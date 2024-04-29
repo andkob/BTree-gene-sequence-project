@@ -517,4 +517,18 @@ public class BTree implements BTreeInterface {
         buffer.flip();
         disk.write(buffer);
     }
+
+    /**
+     * Closes the file channel associated with this B-Tree.
+     * This should be called whenever you are done with this B-Tree
+     * to prevent resource leaks and ensure proper file deletion.
+     */
+    public void close() {
+        try {
+            disk.close();
+        } catch (IOException e) {
+            System.out.println("Error when trying to close file channel");
+            e.printStackTrace();
+        }
+    }
 }
