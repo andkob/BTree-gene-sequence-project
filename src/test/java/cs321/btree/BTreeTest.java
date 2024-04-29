@@ -152,9 +152,6 @@ public class BTreeTest {
 
         for (int i = 10; i > 0; i--) {
             input[10 - i] = i;
-            if (i == 5)
-            b.insert(new TreeObject(i));
-            else
             b.insert(new TreeObject(i));
         }
 

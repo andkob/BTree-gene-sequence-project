@@ -283,7 +283,7 @@ public class BTree implements BTreeInterface {
             }
 
             // Insert the key into the node if there are no duplicates, otherwise increment the key's frequency
-            if (i > -1) { // if i = -1, the node is either empty or the key goes in keys[0] TODO - not checking duplicate at [0], but test for this before implementing
+            if (i > -1) { // if i = -1, the node is empty
                 if (targetNode.keys[i].compareTo(key) != 0) {
                     targetNode.keys[i + 1] = key;
                     targetNode.numKeys++;
