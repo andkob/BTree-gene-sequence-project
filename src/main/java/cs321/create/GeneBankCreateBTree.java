@@ -5,7 +5,6 @@ import cs321.btree.TreeObject;
 import cs321.common.ParseArgumentException;
 
 import java.io.*;
-import java.util.List;
 
 public class GeneBankCreateBTree
 {
@@ -25,9 +24,9 @@ public class GeneBankCreateBTree
             
             GeneBankFileReader reader = new GeneBankFileReader(gbkFile, sequence);
             
-            BTree tree = new BTree(arguments.getDegree(), arguments.getGbkFileName(), sequence, arguments.getUseCache(), arguments.getCacheSize());
+            BTree tree = new BTree(arguments.getDegree(), "btree.bt", sequence, arguments.getUseCache(), arguments.getCacheSize());
             
-            while ((sequence = (int)reader.getNextSequence()) != -1) {
+            while ((sequence = (int) reader.getNextSequence()) != -1) {
                 tree.insert(new TreeObject(sequence));
             }
             

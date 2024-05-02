@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.lang.StringBuilder;
 
+import cs321.common.DNA;
+
 /**
  * GeneBankFileDeader parses GBK files
  * and outputs DNA sequences of a specified length
@@ -95,7 +97,7 @@ public class GeneBankFileReader implements GeneBankFileReaderInterface  {
         int originIndex = fileAsString.indexOf("ORIGIN", index);
             if (originIndex != -1) {
                 originFound = true;
-                trackedIndex = originIndex + 6; // Move past "ORIGIN"
+                trackedIndex = originIndex + 23; // Move past "ORIGIN"
         } else {
             originFound = false;
         }

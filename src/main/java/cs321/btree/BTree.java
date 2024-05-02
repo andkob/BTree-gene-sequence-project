@@ -429,7 +429,29 @@ public class BTree implements BTreeInterface {
                 }
                 // Visit the current key
                 if (node.keys[i] != null) {
-                    out.println(node.keys[i].getKey() + " - Frequency: " + node.keys[i].getCount());
+                    String binaryNum = Long.toBinaryString(node.keys[i].getKey());
+                    String sequence = "";
+                    // decode sequence and count the occurences of DNA bases
+                    for (int j = 0; j < binaryNum.length() - 2; j += 2) {
+                        String pair = binaryNum.substring(j, j + 2);
+                        switch (pair) {
+                            case "00": // A
+                                sequence += 'a';
+                                break;
+                            case "11": // T
+                                sequence += 't';
+                                break;
+                            case "01": // C
+                                sequence += 'c';
+                                break;
+                            case "10": // G
+                                sequence += 'g';
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    out.println(sequence + " " + node.keys[i].getCount());
                 }
                 // Recursively visit the right child of the last key
                 if (i == node.numKeys - 1 && node.children[i + 1] != -1) {
@@ -441,7 +463,30 @@ public class BTree implements BTreeInterface {
             // Leaf node, simply print all keys
             for (int i = 0; i < node.numKeys; i++) {
                 if (node.keys[i] != null) {
-                    out.println(node.keys[i].getKey() + " - Frequency: " + node.keys[i].getCount());
+                    // out.println(node.keys[i].getKey() + " - Frequency: " + node.keys[i].getCount());
+                    String binaryNum = Long.toBinaryString(node.keys[i].getKey());
+                    String sequence = "";
+                    // decode sequence and count the occurences of DNA bases
+                    for (int j = 0; j < binaryNum.length() - 2; j += 2) {
+                        String pair = binaryNum.substring(j, j + 2);
+                        switch (pair) {
+                            case "00": // A
+                                sequence += 'a';
+                                break;
+                            case "11": // T
+                                sequence += 't';
+                                break;
+                            case "01": // C
+                                sequence += 'c';
+                                break;
+                            case "10": // G
+                                sequence += 'g';
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    out.println(sequence + " " + node.keys[i].getCount());
                 }
             }
         }
