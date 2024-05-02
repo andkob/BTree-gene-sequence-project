@@ -14,7 +14,8 @@ public class GeneBankCreateBTree
         {
             GeneBankCreateBTreeArguments arguments = parseArgumentsAndHandleExceptions(args);
             
-            int sequence = arguments.getSubsequenceLength();
+            long sequence;
+            int seqLength = arguments.getSubsequenceLength();
             
             File gbkFile = new File(arguments.getGbkFileName());
             if (!gbkFile.exists() || !gbkFile.isFile()) {
@@ -22,11 +23,11 @@ public class GeneBankCreateBTree
                 System.exit(1);
             }
             
-            GeneBankFileReader reader = new GeneBankFileReader(gbkFile, sequence);
+            GeneBankFileReader reader = new GeneBankFileReader(gbkFile, seqLength);
             
-            BTree tree = new BTree(arguments.getDegree(), "btree.bt", sequence, arguments.getUseCache(), arguments.getCacheSize());
+            BTree tree = new BTree(arguments.getDegree(), "btree.bt", seqLength, arguments.getUseCache(), arguments.getCacheSize());
             
-            while ((sequence = (int) reader.getNextSequence()) != -1) {
+            while ((sequence = reader.getNextSequence()) != -1) {
                 tree.insert(new TreeObject(sequence));
             }
             

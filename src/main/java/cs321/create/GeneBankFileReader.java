@@ -97,7 +97,7 @@ public class GeneBankFileReader implements GeneBankFileReaderInterface  {
         int originIndex = fileAsString.indexOf("ORIGIN", index);
             if (originIndex != -1) {
                 originFound = true;
-                trackedIndex = originIndex + 23; // Move past "ORIGIN"
+                trackedIndex = originIndex + 24; // Move past "ORIGIN"
         } else {
             originFound = false;
         }
