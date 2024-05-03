@@ -5,7 +5,6 @@ import cs321.btree.TreeObject;
 import cs321.common.ParseArgumentException;
 
 import java.io.*;
-import java.util.List;
 
 public class GeneBankCreateBTree
 {
@@ -13,9 +12,18 @@ public class GeneBankCreateBTree
     public static void main(String[] args) throws Exception {
         try 
         {
+            // TODO - delte this later 
+            File btreeFile = new File("btree.bt");
+            if (btreeFile.exists()) {
+                btreeFile.delete();
+            }
+            //
+
+            
             GeneBankCreateBTreeArguments arguments = parseArgumentsAndHandleExceptions(args);
             
-            int sequence = arguments.getSubsequenceLength();
+            long sequence;
+            int seqLength = arguments.getSubsequenceLength();
             
             File gbkFile = new File(arguments.getGbkFileName());
             if (!gbkFile.exists() || !gbkFile.isFile()) {
@@ -23,16 +31,15 @@ public class GeneBankCreateBTree
                 System.exit(1);
             }
             
-            GeneBankFileReader reader = new GeneBankFileReader(gbkFile, sequence);
+            GeneBankFileReader reader = new GeneBankFileReader(gbkFile, seqLength);
             
-            BTree tree = new BTree(arguments.getDegree(), arguments.getGbkFileName(), sequence, arguments.getUseCache(), arguments.getCacheSize());
-            
-            while ((sequence = (int)reader.getNextSequence()) != -1) {
+            BTree tree = new BTree(arguments.getDegree(), "btree.bt", seqLength, arguments.getUseCache(), arguments.getCacheSize());
+            while ((sequence = reader.getNextSequence()) != -1) {
                 tree.insert(new TreeObject(sequence));
             }
             
             if (arguments.getDebugLevel() == 1) {
-            	PrintWriter printWriter = new PrintWriter(new FileWriter(arguments.getGbkFileName() + ".dump." + sequence)); // name of dump files
+            	PrintWriter printWriter = new PrintWriter(new FileWriter(arguments.getGbkFileName() + ".dump." + seqLength)); // name of dump files
                 tree.dumpToFile(printWriter);
                 printWriter.close();
             }
