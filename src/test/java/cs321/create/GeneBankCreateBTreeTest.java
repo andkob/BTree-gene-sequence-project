@@ -4,26 +4,20 @@ import cs321.common.ParseArgumentException;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
-public class GeneBankCreateBTreeTest
-{
-    private String[] args;
-    private GeneBankCreateBTreeArguments expectedConfiguration;
-    private GeneBankCreateBTreeArguments actualConfiguration;
+public class GeneBankCreateBTreeTest {
 
     @Test
-    public void parse4CorrectArgumentsTest() throws ParseArgumentException
-    {
-        args = new String[4];
-        args[0] = "0"; // Instead of "--cache=0"
-        args[1] = "20"; // Instead of "--degree=20"
-        args[2] = "fileNameGbk.gbk"; // Instead of "--gbkfile=fileNameGbk.gbk"
-        args[3] = "13"; // Instead of "--length=13"
+    public void ParseArgumentsTest() throws ParseArgumentException {
+        String args[] = {"--cache=0", "--degree=15", "--gbkfile=data/files_gbk/test0.gbk", "--length=10", "--debug=1"};
+        GeneBankCreateBTreeArguments test = new GeneBankCreateBTreeArguments(args);
 
-        expectedConfiguration = new GeneBankCreateBTreeArguments(false, 20, "fileNameGbk.gbk", 13, 0, 0);
-        actualConfiguration = GeneBankCreateBTree.parseArguments(args);
-        assertEquals(expectedConfiguration, actualConfiguration);
+        assertEquals(false,test.getUseCache());
+        assertEquals(15, test.getDegree());
+        assertEquals("data/files_gbk/test0.gbk", test.getGbkFileName());
+        assertEquals(10, test.getSubsequenceLength());
+        assertEquals(1, test.getDebugLevel());
+        assertEquals(-1, test.getCacheSize());
     }
 
 }

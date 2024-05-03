@@ -1,13 +1,9 @@
 package cs321.search;
 
-import cs321.btree.BTree;
-import cs321.common.ParseArgumentException;
-import cs321.common.ParseArgumentUtils;
 import cs321.create.SequenceUtils;
 
 import java.io.File;
 import java.sql.Connection;
-import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
