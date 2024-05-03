@@ -32,11 +32,8 @@ public class GeneBankSearchDatabase {
             return;
         }
 
-        //temporary code to create database to search
-        //TODO remove/edit when CreateBTree implemented
-
         url = "jdbc:sqlite:" + searchArgs.getDatabasePath();
-        query = "results/query-results/" + searchArgs.getQueryFile();
+        query = searchArgs.getQueryFile();
         Connection connection = null;
 
         try {
@@ -44,32 +41,16 @@ public class GeneBankSearchDatabase {
             connection = DriverManager.getConnection(url);
             Statement statement = connection.createStatement();
 
-            //will need to move
-
-            statement.executeUpdate("drop table if exists dna");
-            statement.executeUpdate("create table dna (sequence string, frequency integer)");
-
-            File f = new File("results/dumpfiles/test0.gbk.dump.5");
+            File f = new File(query);
             Scanner s = new Scanner(f);
-            String sequence;
             int frequency;
-            while(s.hasNext()) {
-                sequence = s.next();
-                frequency = Integer.parseInt(s.next());
-                statement.executeUpdate("insert into dna values('" + sequence + "', " + frequency + ")");
-            }
-
-            s.close();
-
-            //end delete
-
-            f = new File(query);
-            s = new Scanner(f);
+            String sequence;
+            String queryOutName = searchArgs.getDatabasePath().substring(0, searchArgs.getDatabasePath().indexOf("gbk") + 3);
 
             try {
-                File file = new File(query + ".dump");
+                File file = new File(query + "-" + queryOutName + ".out");
                 file.createNewFile();
-                PrintWriter out = new PrintWriter(query + ".dump");
+                PrintWriter out = new PrintWriter(query + "-" + queryOutName + ".out");
 
                 while(s.hasNext()) {
                     sequence = s.next().toLowerCase();

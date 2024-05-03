@@ -5,6 +5,10 @@ import cs321.btree.TreeObject;
 import cs321.common.ParseArgumentException;
 
 import java.io.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+import java.util.Scanner;
 
 public class GeneBankCreateBTree
 {
@@ -42,7 +46,33 @@ public class GeneBankCreateBTree
             	PrintWriter printWriter = new PrintWriter(new FileWriter(arguments.getGbkFileName() + ".dump." + seqLength)); // name of dump files
                 tree.dumpToFile(printWriter);
                 printWriter.close();
+
+                //Create sql database
+                Connection connection = null;
+                String databaseName = arguments.getGbkFileName();
+                databaseName = databaseName.substring(databaseName.indexOf("test"));
+                connection = DriverManager.getConnection("jdbc:sqlite:" + databaseName + "." + seqLength + ".db");
+
+                Statement statement = connection.createStatement();
+                statement.executeUpdate("drop table if exists dna");
+                statement.executeUpdate("create table dna (sequence string, frequency integer)");
+
+                //insert data from dumpfile into database
+                System.out.println(arguments.getGbkFileName() + ".dump." + seqLength);
+                File f = new File(arguments.getGbkFileName() + ".dump." + seqLength);
+                Scanner s = new Scanner(f);
+                String dbSequence;
+                int frequency;
+                while(s.hasNext()) {
+                    dbSequence = s.next();
+                    frequency = Integer.parseInt(s.next());
+                    statement.executeUpdate("insert into dna values('" + dbSequence + "', " + frequency + ")");
+                }
+
+            s.close();
+
             }
+
             
         } 
         catch (Exception e) 
