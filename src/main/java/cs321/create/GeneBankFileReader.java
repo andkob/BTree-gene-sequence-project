@@ -58,28 +58,28 @@ public class GeneBankFileReader implements GeneBankFileReaderInterface  {
         if(originFound) {
             for(int i = trackedIndex; i < sb.length(); i++) {
                 currentChar = sb.charAt(i);
-                //end of ORIGIN section
-                if (currentChar == '/') {
-                    originFound = false;
+                // skip past spaces and numbers
+                if ((currentChar == ' ' && charsAdded == 0)) {
                     trackedIndex++;
-                    //recursion gauruntees sequence or EOF
-                    return getNextSequence();
-                } else if (currentChar == 'N' || currentChar == 'n') {
-                    sequence = "";
-                    charsAdded = 0;
-                    trackedIndex += seqLength + 1;
-                } else if (Character.isLetter(currentChar)) {
-                    sequence += (char)currentChar;
-                    charsAdded++;
-                    if(charsAdded == seqLength) {
-                        trackedIndex++;
-                        return SequenceUtils.dnaStringToLong(sequence);
-                    }
                 } else {
-                    if(charsAdded == 0) {
+                    //end of ORIGIN section
+                    if (currentChar == '/') {
+                        originFound = false;
                         trackedIndex++;
-                        break;
+                        //recursion gauruntees sequence or EOF
+                        return getNextSequence();
+                    } else if (currentChar == 'N' || currentChar == 'n') {
+                        sequence = "";
+                        charsAdded = 0;
+                        trackedIndex += seqLength + 1;
+                    } else if (Character.isLetter(currentChar)) {
+                        sequence += (char)currentChar;
+                        charsAdded++;
                     }
+                }
+                if (charsAdded == seqLength) {
+                    trackedIndex++;
+                    return SequenceUtils.dnaStringToLong(sequence);
                 }
             }
         } 

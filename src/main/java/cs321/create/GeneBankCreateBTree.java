@@ -12,6 +12,14 @@ public class GeneBankCreateBTree
     public static void main(String[] args) throws Exception {
         try 
         {
+            // TODO - delte this later 
+            File btreeFile = new File("btree.bt");
+            if (btreeFile.exists()) {
+                btreeFile.delete();
+            }
+            //
+
+            
             GeneBankCreateBTreeArguments arguments = parseArgumentsAndHandleExceptions(args);
             
             long sequence;
@@ -26,13 +34,12 @@ public class GeneBankCreateBTree
             GeneBankFileReader reader = new GeneBankFileReader(gbkFile, seqLength);
             
             BTree tree = new BTree(arguments.getDegree(), "btree.bt", seqLength, arguments.getUseCache(), arguments.getCacheSize());
-            
             while ((sequence = reader.getNextSequence()) != -1) {
                 tree.insert(new TreeObject(sequence));
             }
             
             if (arguments.getDebugLevel() == 1) {
-            	PrintWriter printWriter = new PrintWriter(new FileWriter(arguments.getGbkFileName() + ".dump." + sequence)); // name of dump files
+            	PrintWriter printWriter = new PrintWriter(new FileWriter(arguments.getGbkFileName() + ".dump." + seqLength)); // name of dump files
                 tree.dumpToFile(printWriter);
                 printWriter.close();
             }

@@ -8,6 +8,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Arrays;
 
+import cs321.create.SequenceUtils;
+
 /**
  * Represents a B-Tree structure that provides efficient data insertion, deletion,
  * and lookup. This implementation specifically supports disk-based operations
@@ -27,6 +29,7 @@ public class BTree implements BTreeInterface {
     private BTreeNode root; // Reference to the root node in the file
     private FileChannel disk; // Named this 'disk' for simplicity. All I/O operations should be done through this file channel.
     private int numKeys; // Total number of keys in the BTree
+    private int seqLength;
 
     /**
      * Constructs a BTree using the default degree and initializes it from a file
@@ -69,6 +72,7 @@ public class BTree implements BTreeInterface {
         this.height = 0;
         this.degree = degree;
         this.nodeCount = 1;
+        this.seqLength = seqLength;
 
         File file = new File(filePath);
         try {
@@ -288,7 +292,6 @@ public class BTree implements BTreeInterface {
                     targetNode.keys[i + 1] = key;
                     targetNode.numKeys++;
                     numKeys++;
-                    diskWrite(targetNode);
                 } else {
                     targetNode.keys[i].incrementFrequency();
                 }
@@ -296,7 +299,6 @@ public class BTree implements BTreeInterface {
                 targetNode.keys[0] = key;
                 targetNode.numKeys++;
                 numKeys++;
-                diskWrite(targetNode);
             }
         } else { // Handle non-leaf nodes
             while (i >= 0 && targetNode.keys[i].compareTo(key) > 0) {
@@ -330,6 +332,7 @@ public class BTree implements BTreeInterface {
                 insertNonFull(targetChild, key);
             }
         }
+        diskWrite(targetNode);
     }
 
     /**
@@ -429,13 +432,8 @@ public class BTree implements BTreeInterface {
                 }
                 // Visit the current key
                 if (node.keys[i] != null) {
-                    String binaryNum = Long.toBinaryString(node.keys[i].getKey());
-                    String sequence = "";
                     // decode sequence and count the occurences of DNA bases
-                    for (int j = 0; j <= binaryNum.length() - 2; j += 2) {
-                        String pair = binaryNum.substring(j, j + 2);
-                        append_DNA_base(pair, sequence);
-                    }
+                    String sequence = SequenceUtils.longToDnaString(node.keys[i].getKey(), seqLength);
                     out.println(sequence + " " + node.keys[i].getCount());
                 }
                 // Recursively visit the right child of the last key
@@ -447,44 +445,13 @@ public class BTree implements BTreeInterface {
         } else {
             // Leaf node, simply print all keys
             for (int i = 0; i < node.numKeys; i++) {
-                if (node.keys[i] != null) {
-                    // out.println(node.keys[i].getKey() + " - Frequency: " + node.keys[i].getCount());
-                    String binaryNum = Long.toBinaryString(node.keys[i].getKey());
-                    String sequence = "";
+                long encodedSequence = node.keys[i].getKey();
+                if (encodedSequence != -1) {
                     // decode sequence and count the occurences of DNA bases
-                    for (int j = 0; j <= binaryNum.length() - 2; j += 2) {
-                        String pair = binaryNum.substring(j, j + 2);
-                        append_DNA_base(pair, sequence);
-                    }
+                    String sequence = SequenceUtils.longToDnaString(encodedSequence, seqLength);
                     out.println(sequence + " " + node.keys[i].getCount());
                 }
             }
-        }
-    }
-
-    /**
-     * Finds the corresponding DNA base character given a two digit substring,
-     * and appends it to a given sequence.
-     * 
-     * @param pair      The two digit substring corresponding to a DNA base character
-     * @param sequence  The DNA sequence to append the character to
-     */
-    private void append_DNA_base(String pair, String sequence) {
-        switch (pair) {
-            case "00": // A
-                sequence += 'a';
-                break;
-            case "11": // T
-                sequence += 't';
-                break;
-            case "01": // C
-                sequence += 'c';
-                break;
-            case "10": // G
-                sequence += 'g';
-                break;
-            default:
-                break;
         }
     }
     
