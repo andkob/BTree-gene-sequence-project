@@ -278,6 +278,9 @@ public class BTree implements BTreeInterface {
      * @throws IOException
      */
     private void insertNonFull(BTreeNode targetNode, TreeObject key) throws IOException {
+        if (key.getKey() == SequenceUtils.dnaStringToLong("aaaac")) {
+            System.out.println();
+        }
         int i = targetNode.numKeys - 1; // Initialize an insertion index
         if (targetNode.isLeaf) {
             // Shift keys to make room for the new key after the insertion index

@@ -1,8 +1,7 @@
 package cs321.create;
-import java.io.IOException;
 import java.io.File;
 import java.io.FileReader;
-import java.lang.StringBuilder;
+import java.io.IOException;
 
 import cs321.common.DNA;
 
@@ -58,28 +57,25 @@ public class GeneBankFileReader implements GeneBankFileReaderInterface  {
         if(originFound) {
             for(int i = trackedIndex; i < sb.length(); i++) {
                 currentChar = sb.charAt(i);
-                // skip past spaces and numbers
-                if ((currentChar == ' ' && charsAdded == 0)) {
+                //end of ORIGIN section
+                if (currentChar == '/') {
+                    originFound = false;
                     trackedIndex++;
-                } else {
-                    //end of ORIGIN section
-                    if (currentChar == '/') {
-                        originFound = false;
+                    //recursion gauruntees sequence or EOF
+                    return getNextSequence();
+                } else if (currentChar == 'N' || currentChar == 'n') {
+                    sequence = "";
+                    charsAdded = 0;
+                    trackedIndex = i + 1;
+                } else if (Character.isLetter(currentChar)) {
+                    sequence += (char)currentChar;
+                    charsAdded++;
+                    if(charsAdded == seqLength) {
                         trackedIndex++;
-                        //recursion gauruntees sequence or EOF
-                        return getNextSequence();
-                    } else if (currentChar == 'N' || currentChar == 'n') {
-                        sequence = "";
-                        charsAdded = 0;
-                        trackedIndex += seqLength + 1;
-                    } else if (Character.isLetter(currentChar)) {
-                        sequence += (char)currentChar;
-                        charsAdded++;
+                        return SequenceUtils.dnaStringToLong(sequence);
                     }
-                }
-                if (charsAdded == seqLength) {
+                } else if (charsAdded == 0) {
                     trackedIndex++;
-                    return SequenceUtils.dnaStringToLong(sequence);
                 }
             }
         } 
@@ -97,7 +93,7 @@ public class GeneBankFileReader implements GeneBankFileReaderInterface  {
         int originIndex = fileAsString.indexOf("ORIGIN", index);
             if (originIndex != -1) {
                 originFound = true;
-                trackedIndex = originIndex + 24; // Move past "ORIGIN"
+                trackedIndex = originIndex + 23; // Move past "ORIGIN"
         } else {
             originFound = false;
         }
