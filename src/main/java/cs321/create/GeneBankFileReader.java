@@ -1,8 +1,7 @@
 package cs321.create;
-import java.io.IOException;
 import java.io.File;
 import java.io.FileReader;
-import java.lang.StringBuilder;
+import java.io.IOException;
 
 /**
  * GeneBankFileDeader parses GBK files
@@ -65,7 +64,7 @@ public class GeneBankFileReader implements GeneBankFileReaderInterface  {
                 } else if (currentChar == 'N' || currentChar == 'n') {
                     sequence = "";
                     charsAdded = 0;
-                    trackedIndex += seqLength + 1;
+                    trackedIndex = i + 1;
                 } else if (Character.isLetter(currentChar)) {
                     sequence += (char)currentChar;
                     charsAdded++;
@@ -73,11 +72,8 @@ public class GeneBankFileReader implements GeneBankFileReaderInterface  {
                         trackedIndex++;
                         return SequenceUtils.dnaStringToLong(sequence);
                     }
-                } else {
-                    if(charsAdded == 0) {
-                        trackedIndex++;
-                        break;
-                    }
+                } else if (charsAdded == 0) {
+                    trackedIndex++;
                 }
             }
         } 
