@@ -26,6 +26,7 @@ build/
 *.data.*
 *.dump.*
 dump
+*.out
 
 # ignore these files too
 .classpath
