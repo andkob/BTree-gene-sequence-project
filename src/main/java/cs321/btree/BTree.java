@@ -278,11 +278,18 @@ public class BTree implements BTreeInterface {
      * @throws IOException
      */
     private void insertNonFull(BTreeNode targetNode, TreeObject key) throws IOException {
-        if (key.getKey() == SequenceUtils.dnaStringToLong("aaaac")) {
-            System.out.println();
-        }
         int i = targetNode.numKeys - 1; // Initialize an insertion index
         if (targetNode.isLeaf) {
+
+            // check for duplicates
+            for (int j = 0; j < targetNode.numKeys; j++) {
+                if (targetNode.keys[j].compareTo(key) == 0) {
+                    targetNode.keys[j].incrementFrequency();
+                    diskWrite(targetNode);
+                    return; // exit insert
+                }
+            }
+
             // Shift keys to make room for the new key after the insertion index
             while (i >= 0 && targetNode.keys[i].compareTo(key) > 0) {
                 targetNode.keys[i + 1] = targetNode.keys[i];
@@ -291,49 +298,53 @@ public class BTree implements BTreeInterface {
 
             // Insert the key into the node if there are no duplicates, otherwise increment the key's frequency
             if (i > -1) { // if i = -1, the node is empty
-                if (targetNode.keys[i].compareTo(key) != 0) {
-                    targetNode.keys[i + 1] = key;
-                    targetNode.numKeys++;
-                    numKeys++;
-                } else {
-                    targetNode.keys[i].incrementFrequency();
-                }
+                targetNode.keys[i + 1] = key;
+                targetNode.numKeys++;
+                numKeys++;
             } else {
                 targetNode.keys[0] = key;
                 targetNode.numKeys++;
                 numKeys++;
             }
         } else { // Handle non-leaf nodes
+            
+            // check for duplicates in the targetNode
+            for (int j = 0; j < targetNode.numKeys; j++) {
+                if (targetNode.keys[j].compareTo(key) == 0) {
+                    targetNode.keys[j].incrementFrequency();
+                    diskWrite(targetNode);
+                    return; // exit insert
+                }
+            }
+
+            // Shift keys to make room for the new key after the insertion index
             while (i >= 0 && targetNode.keys[i].compareTo(key) > 0) {
                 i--;
             }
-            // check for duplicates
-            if (i >= 0 && targetNode.keys[i].compareTo(key) == 0) {
-                targetNode.keys[i].incrementFrequency();
-            } else {
-                i++; // Increment 'i' by 1 to move to the next child pointer
-                BTreeNode targetChild = diskRead(targetNode.children[i]); // get the next child
-                // Split the node if it's full
-                if (targetChild.numKeys == 2 * degree - 1) {
 
-                    // Edge Case Check: Before splitting, make sure the child does not contain the duplicate
-                    if (targetChild.keys[i].compareTo(key) == 0) {
-                        // if full, increment the key's frequency and rewrite it to the disk
-                        targetChild.keys[i].incrementFrequency();
+            i++; // Increment 'i' by 1 to move to the next child pointer
+            BTreeNode targetChild = diskRead(targetNode.children[i]); // get the next child
+            // Split the node if it's full
+            if (targetChild.numKeys == 2 * degree - 1) {
+
+                // Edge Case Check: Before splitting, make sure the child does not contain the duplicate
+                for (int j = 0; j < targetChild.numKeys; j++) {
+                    if (targetChild.keys[j].compareTo(key) == 0) {
+                        targetChild.keys[j].incrementFrequency();
                         diskWrite(targetChild);
-                        return; // exit before inserting
-                    }
-
-                    splitChild(targetNode, i, targetChild);
-
-                    // Find if the key goes into the child at i or i + 1
-                    if (i < targetNode.numKeys && targetNode.keys[i].compareTo(key) < 0) {
-                        i++;
-                        targetChild = diskRead(targetNode.children[i]);
+                        return; // exit insert
                     }
                 }
-                insertNonFull(targetChild, key);
+                
+                splitChild(targetNode, i, targetChild);
+
+                // Find if the key goes into the child at i or i + 1
+                if (i < targetNode.numKeys && targetNode.keys[i].compareTo(key) < 0) {
+                    i++;
+                    targetChild = diskRead(targetNode.children[i]);
+                }
             }
+            insertNonFull(targetChild, key);
         }
         diskWrite(targetNode);
     }
@@ -439,12 +450,12 @@ public class BTree implements BTreeInterface {
                     String sequence = SequenceUtils.longToDnaString(node.keys[i].getKey(), seqLength);
                     out.println(sequence + " " + node.keys[i].getCount());
                 }
-                // Recursively visit the right child of the last key
-                if (i == node.numKeys - 1 && node.children[i + 1] != -1) {
-                    BTreeNode child = diskRead(node.children[i + 1]);
-                    dumpNode(child, out);
-                }
             }
+            // Recursively visit the right child of the last key
+            // if (i == node.numKeys - 1 && node.children[i + 1] != -1) {
+                BTreeNode child = diskRead(node.children[node.numKeys]);
+                dumpNode(child, out);
+            // }
         } else {
             // Leaf node, simply print all keys
             for (int i = 0; i < node.numKeys; i++) {
