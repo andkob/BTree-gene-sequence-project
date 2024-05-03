@@ -3,8 +3,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import cs321.common.DNA;
-
 /**
  * GeneBankFileDeader parses GBK files
  * and outputs DNA sequences of a specified length
