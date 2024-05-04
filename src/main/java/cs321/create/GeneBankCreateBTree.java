@@ -58,7 +58,7 @@ public class GeneBankCreateBTree {
             
             //if debug level chosen, create dumpfile and databse from dumpfile
             if (arguments.getDebugLevel() == 1) {
-            	PrintWriter printWriter = new PrintWriter(new FileWriter(arguments.getGbkFileName() + ".dump." + seqLength)); // name of dump files
+            	PrintWriter printWriter = new PrintWriter(new FileWriter("dump")); // name of dump files
                 tree.dumpToFile(printWriter);
                 printWriter.close();
 
@@ -73,7 +73,6 @@ public class GeneBankCreateBTree {
                 statement.executeUpdate("create table dna (sequence string, frequency integer)");
 
                 //insert data from dumpfile into database
-                System.out.println(arguments.getGbkFileName() + ".dump." + seqLength);
                 File f = new File(arguments.getGbkFileName() + ".dump." + seqLength);
                 Scanner s = new Scanner(f);
                 String dbSequence;

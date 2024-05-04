@@ -74,6 +74,11 @@ public class BTree implements BTreeInterface {
         this.nodeCount = 1;
         this.seqLength = seqLength;
 
+        if(degree == 0) {
+            degree = OPTIMAL_DEGREE;
+            this.degree = OPTIMAL_DEGREE;
+        }
+
         File file = new File(filePath);
         try {
             if (file.exists()) { // Read in data from the file
