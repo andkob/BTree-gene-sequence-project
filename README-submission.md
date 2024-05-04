@@ -44,7 +44,7 @@ The parts of this project that I worked on the most were GeneBankSearchDatabase,
 
 I found the biggest challenge for this project to be the various methods of parsing input, dumping output, and syntax associated with SQL databases. The ouput had to do with GeneBankFileReader, which forced me to solve the issue of a shifting window for sequences that accounted for all possible characters and whitespace. Parsing the command line in any order also proved to be difficult, with there being a myriad of ways that a user could mess up input. SQL wasn't too much of an issue; the main learning curve came from understanding the syntax associated with SQL commands.
 
-Overall, I wish we had had a little bit more guidance with the specific output each class was expected to produce. It was confusing to try and figure out exactly how the shell scripts ran and as a result wee ran out of time before 
+Overall, I wish we had had a little bit more guidance with the specific output each class was expected to produce. It was confusing to try and figure out the logistics of the shell scripts- what files they were searching for, how those files would be tested, and what classses they would be running to confirm that the programs were working succsesfully. Additionally, there was no script to test GeneBankSearchDataBase, so we weren't postive that it was up to the standards that the graders wanted. 
 
 ## Reflection (Caleb Tolman)
 This coding assignment on creating a GeneBank B-Tree has been a pivotal moment in my computer science education, reinforcing concepts that were previously abstract and encouraging a hands-on approach to learning data structures. The project not only solidified my understanding of B-Trees but also exposed me to practical applications of bioinformatics. Managing to read and extract DNA sequences from a gene bank file and then utilizing these sequences to build a functional B-Tree was a rewarding challenge that bridged the gap between theoretical data structures and real-world applications.
@@ -55,6 +55,6 @@ The integration of a caching mechanism and the creation of a dump file for debug
 
 We have GeneBankCreateBTree configured to create an SQL database as soon as the dumpfile is created, i.e., when the debug level is 1. This means that with larger GBK files like test5.gbk, running GeneBankCreateBTree with debug level 1 will take a massive amount of time due to the reading/writing costs of scanning such large files multiple times with a scanner and loading each of the scanner results into the database.  
 
-We implemented a cache with a hashtable as part of the implementation, but we weren't able to improve our runtimes. We aren't sure if this is an issue with our cache itself, or the way we implemented cache into the DiskRead() and DiskWrite() methods
+We implemented a cache with a hashtable as part of the implementation, but we weren't able to improve our runtimes by much. We aren't sure if this is an issue with our cache itself, or the way we implemented cache into the DiskRead() and DiskWrite() methods
 
 plz be gentle <3
