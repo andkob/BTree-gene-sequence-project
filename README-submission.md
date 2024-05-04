@@ -23,10 +23,10 @@ How many of the query files results matched (using the check-queries.sh script)?
 # Cache Performance Results
 | gbk file | degree | sequence length | cache | cache size | createBTree run time | searchBTree run time |
 | -------- | ------ | --------------- | ----- | ---------- | -------------------- | -------------------- |
-| test5.gbk|  101   |     20          |  no   |    0       |        29.52s        |        29.52s        |
-| test5.gbk|  101   |     20          |  yes  |    100     |        12.56s        |        12.56s        |
-| test5.gbk|  101   |     20          |  yes  |    500     |        10.22s        |        10.22s        |
-| test5.gbk|  101   |     20          |  yes  |    5000    |        5.08s         |        5.08s         |
+| test5.gbk|  101   |     20          |  no   |    0       |         74s          |        29.52s        |
+| test5.gbk|  101   |     20          |  yes  |    100     |         73s          |        12.56s        |
+| test5.gbk|  101   |     20          |  yes  |    500     |         70s          |        10.22s        |
+| test5.gbk|  101   |     20          |  yes  |    5000    |         62s          |        5.08s         |
 
 # AWS Notes
 We did not run the code on AWS :(
@@ -36,6 +36,10 @@ We did not run the code on AWS :(
 Provide a reflection by each of the team member (in a separate subsection)
 
 ## Reflection (Andrew Kobus)
+Working on the GeneBank B-Tree project has been a highly educational and somewhat challenging experience. Throughout this project, I have developed a deeper understanding of how B-Trees function, especially in the context of managing large datasets such as genetic information. Initially, the task of parsing gene bank files and correctly inserting sequences into a B-Tree felt daunting; however, implementing the process improved my ability to manage file I/O operations and understand binary search trees more intricately.
+
+One of the most rewarding aspects of this project was implementing the B-Tree insertion and deletion operations. It required careful consideration of tree balance and node splitting, pushing me to think algorithmically and pay attention to efficiency and data integrity. Moreover, adding the debugging functionality and SQL database interaction brought practical insights into how such systems are integrated and used in real-world applications. The challenges I faced, particularly in debugging and optimizing the search and insert functionalities, taught me the importance of thorough testing and incremental development. This project has significantly enhanced my coding skills, problem-solving abilities, and understanding of complex data structures.
+
 ## Reflection (Damon Wargo)
 The parts of this project that I worked on the most were GeneBankSearchDatabase, GeneBankFileReader, GeneBankCreateBtree, and the arguement files associated with the aforementioned files. So, my contributions were largely centered around the programs that helped the BTree as opposed to the actual BTree itself. 
 
@@ -44,6 +48,9 @@ I found the biggest challenge for this project to be the various methods of pars
 Overall, I wish we had had a little bit more guidance with the specific output each class was expected to produce. It was confusing to try and figure out exactly how the shell scripts ran and as a result wee ran out of time before 
 
 ## Reflection (Caleb Tolman)
+This coding assignment on creating a GeneBank B-Tree has been a pivotal moment in my computer science education, reinforcing concepts that were previously abstract and encouraging a hands-on approach to learning data structures. The project not only solidified my understanding of B-Trees but also exposed me to practical applications of bioinformatics. Managing to read and extract DNA sequences from a gene bank file and then utilizing these sequences to build a functional B-Tree was a rewarding challenge that bridged the gap between theoretical data structures and real-world applications.
+
+The integration of a caching mechanism and the creation of a dump file for debugging purposes were particularly insightful, showing me the importance of performance optimization in software development. The task of connecting the application to a SQL database for result verification highlighted the interconnectedness of different areas in computer science, such as database management and software development. Overcoming obstacles in these areas greatly improved my debugging skills and my ability to design more robust and efficient software. Reflecting on this experience, I am grateful for the practical skills gained and the direct application of these skills to solve complex problems. This project has certainly increased my confidence in my programming capabilities and my enthusiasm for tackling more complex projects in the future.
 
 # Additional Notes
 
