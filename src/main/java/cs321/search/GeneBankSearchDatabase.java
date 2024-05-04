@@ -11,9 +11,26 @@ import java.sql.Statement;
 import java.util.Scanner;
 import java.io.PrintWriter;
 
-
+/**
+ * This class is designed to search for DNA sequences in a database populated from a BTree dump file.
+ * It uses a SQLite database to perform the search and outputs the results to a file. The class reads sequences
+ * from a specified query file, searches for these sequences and their complements in the database,
+ * and writes the accumulated frequencies to an output file.
+ *
+ * @author Team 06
+ * 
+ */
 public class GeneBankSearchDatabase {
 
+    /**
+     * Constructs a GeneBankSearchDatabase instance which sets up a connection to a SQLite database,
+     * reads query sequences from a file, and searches for these sequences and their complements in the database.
+     * Results are written to an output file.
+     *
+     * @param args Command-line arguments that specify the database path and query file.
+     * @throws Exception If there is a problem opening the database connection, reading from the query file,
+     *                   executing SQL queries, or writing to the output file.
+     */
     public static void main(String[] args) throws Exception {
         new GeneBankSearchDatabase(args);
     }
@@ -84,10 +101,20 @@ public class GeneBankSearchDatabase {
 
     }
 
+    /**
+     * Retrieves the database URL used to connect to the SQLite database.
+     *
+     * @return The URL of the database.
+     */
     public String getURL() {
         return url;
     }
 
+    /**
+     * Retrieves the path to the query file containing DNA sequences to be searched in the database.
+     *
+     * @return The query file path.
+     */
     public String getQuery() {
         return query;
     }
