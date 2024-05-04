@@ -30,13 +30,6 @@ public class GeneBankCreateBTree {
     public GeneBankCreateBTree(String args[]) {
         try 
         {
-            // TODO - delete this later 
-            File btreeFile = new File("btree.bt");
-            if (btreeFile.exists()) {
-                btreeFile.delete();
-            }
-            //
-
             //validate args
             GeneBankCreateBTreeArguments arguments = new GeneBankCreateBTreeArguments(args);
             if (!arguments.validate()) {
@@ -57,7 +50,6 @@ public class GeneBankCreateBTree {
                 tree.insert(new TreeObject(sequence));
             }
             
-            //if debug level chosen, create dumpfile and databse from dumpfile
             //if debug level chosen, create dumpfile and databse from dumpfile
             if (arguments.getDebugLevel() == 1) {
             	PrintWriter printWriter = new PrintWriter(new FileWriter("dump")); // name of dump files
