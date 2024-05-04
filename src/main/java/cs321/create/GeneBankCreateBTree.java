@@ -47,6 +47,12 @@ public class GeneBankCreateBTree
                 tree.insert(new TreeObject(sequence));
             }
             
+//------------------------------------------------------------------------------------------------------
+            endTime = System.currentTimeMillis();            
+            long elapsedTime = endTime - startTime;
+            System.out.println("Elapsed Time: " + elapsedTime / 1000 + " seconds");
+//------------------------------------------------------------------------------------------------------        
+            
             if (arguments.getDebugLevel() == 1) {
             	PrintWriter printWriter = new PrintWriter(new FileWriter(arguments.getGbkFileName() + ".dump." + seqLength)); // name of dump files
                 tree.dumpToFile(printWriter);
@@ -64,9 +70,6 @@ public class GeneBankCreateBTree
 
                 //insert data from dumpfile into database
                 System.out.println(arguments.getGbkFileName() + ".dump." + seqLength);
-                endTime = System.currentTimeMillis();
-                long elapsedTime = endTime - startTime;
-                System.out.println("Elapsed Time: " + elapsedTime + "milliseconds");
                 File f = new File(arguments.getGbkFileName() + ".dump." + seqLength);
                 Scanner s = new Scanner(f);
                 String dbSequence;

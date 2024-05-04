@@ -129,13 +129,14 @@ public class BTree implements BTreeInterface {
      */
     public BTreeNode diskRead(long nodePointer) throws IOException {
 //---------------------------------------------------------------------------------------
+        // check if it is in the cache first
 		if(usingCache) {
 			LinkedList<BTreeNode> c = cache.getCacheLinkedList();
 			Iterator<BTreeNode> i = c.iterator(); 
 			while(i.hasNext()) {
 				BTreeNode retVal = i.next();
 				if(retVal.getLocation() == nodePointer) {
-                    cache.addObject(retVal);
+                    cache.moveToTop(retVal);
 					return retVal;
 				}
 			}
@@ -221,8 +222,6 @@ public class BTree implements BTreeInterface {
 //-----------------------------------------------------------------------------
         // Insert into cache if cache is being utilized
 		if (usingCache) {
-            // if it doesnt work, remove it before i add it
-            cache.removeObject(node);
 			// Inserts new, updated node into cache
 			cache.addObject(node);
 		}
