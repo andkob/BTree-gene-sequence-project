@@ -83,9 +83,20 @@
 71. getting README ready #156 commit 5d8c7718fc48266e37b9198d012bbb0418c0eb81 `(Caleb Tolman)`
 72. Changes to make BTree and dumpfile shell script work #157 commit 20d9faaf06bf992effada1bc77d261fbe26874fb `(Damon Wargo)`
 73. Tiny change to fix db creation #158 commit fa55b2db018a4c62f06259e349ea6e976bc4bab2 `(Damon Wargo)`
-74. added information for GeneBankSearchDatabase in output #159 commit f52d3bab439569e83cb734bf52f3af8bbf2419b6 `(Damon Wargo)`
-75. Final Merge #160 commit xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx `(student)`
-
+74. added information for GeneBankSearchDatabase in output #159 commit f52d3bab439569e83cb734bf52f3af8bbf2419b6 `(Damon 75. comments
+75. comments #160 commit 71453ed9a1168030595499b3c8b512541887b2c9 `(Caleb Tolman)`
+76. comments #161 commit 4d3305091e639bb88bbce781ee74d69c123162fe `(Caleb Tolman)`
+77. search BTree done #162 commit 6034e29b3229688687e8e7eb6f81c07aa6e0a31b `(Andrew Kobus)`
+78. ok NOWW it works #163 commit 5fb4668b86081cbd72878953f47cf0d3e1fb1a45 `(Andrew Kobus)`
+79. comments #164 commit 9c7901979b7913bce57a07c3170c0bea295081fb `(Andrew Kobus)`
+80. project log update #165 commit baf88847630b337362c633dc286392934f5ea4f7 `(Caleb Tolman)`
+81. readme changes #166 commit ffd642699d9554f3720b7eef74f78b5f7ff91bee `(Damon Wargo)`
+82. ReadME #167 commit 836a314f55cf194e5d9b25c06ce112ea71cc266a `(Caleb Tolman)`
+83. merging to main #168 commit ed3986c8572891d1811841068a9accaf290faa4a `(Andrew Kobus)`
+84. Merge pull request #22 from andkob/beforeMergingToMain #169 commit 6c571f6271fed47b9dbd554aff4bf2a81a7d14e2 `(Andrew Kobus)`
+85. whoopsies #170 commit 908aec4d54300319009d4e8593fca33e57b0d713 `(Andrew Kobus)`
+86. project log update #171 commit xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx `(Caleb Tolman)`
+87. something else #172 commit xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx `(student)`
 
 
 
