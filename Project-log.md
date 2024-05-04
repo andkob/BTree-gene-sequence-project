@@ -111,8 +111,18 @@
 99. deleted that weird journal thing #184 commit cdfe5da556bfa3e7e08d9f9b3771abf0a20e6112 `(Andrew Kobus)`
 100. project log update #185 commit c356da325cecfa371f9bfbc2716f1614a4565c65 `(Caleb Tolman)`
 101. another project log update #186 commit eb6fa979a3dd57a27b85b6da401c46446e03e0f1 `(Caleb Tolman)`
-102. final project log #187 commit xxxxxxxxxxxxxxxxxxxxxxxxxxxx `(Caleb Tolman)`
-
+102. final project log #187 commit ca4047e3a94cf17c5bcfda449692c1cf43b952fc `(Caleb Tolman)`
+103. fixed output format #188 commit 595cc625fa783648e0d264365c57c187d1d1b250 `(Andrew Kobus)`
+104. fixed BTree naming #189 commit 485f445109ad7e8219e1c26cbb5adfb452191691 `(Damon Wargo)`
+105. Delete .settings/org.eclipse.buildship.core.prefs #190 commit a3a67a1619ca540921a2f8e220faab7df0b9f81a `(Caleb Tolman)`
+106. Delete .settings/org.eclipse.buildship.core.prefs #191 commit c68df9bef255acf59a37e4c93257920f908521a6 `(Caleb Tolman)`
+107. Create .settings #192 commit 8aaf6655e19860553330112cd35c0a58bc24a153 `(Caleb Tolman)`
+108. Delete .settings #193 commit 784b157e80f3c33ff9368762869f9c8f479d56e5 `(Caleb Tolman)`
+109. Create org.eclipse.buildship.core.prefs #194 commit d662ddf6a721c51eb250dd9cc083bc4d27eab51d `(Caleb Tolman)`
+110. Delete .settings/.settings directory #195 commit 572e9861fb7229d55d2cd7ba2ec36c25e6ddaf38 `(Caleb Tolman)`
+111. Create org.eclipse.buildship.core.prefs #196 commit b2fcbfece872f5cf40597c0707356345d5b6855a `(Caleb Tolman)`
+112. update project log #197 commit xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx `(Caleb Tolman)`
+ 
 
 
 
