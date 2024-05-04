@@ -9,13 +9,24 @@ import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.Scanner;
 
-public class GeneBankCreateBTree
-{
+/**
+ * Creates a BTree with specified values from command line
+ * for cache usage, cachesize, degree, sequence length,
+ * gbkfile, and debug level 
+ * 
+ * @author Andrew Kobus, Damon Wargo
+ */
+public class GeneBankCreateBTree {
 
     public static void main(String[] args) throws Exception {
         new GeneBankCreateBTree(args);
     }
 
+    /**
+     * Constructor for CreateBTree
+     * 
+     * @param args command line args
+     */
     public GeneBankCreateBTree(String args[]) {
         try 
         {
@@ -30,7 +41,7 @@ public class GeneBankCreateBTree
             }
             //
 
-            
+            //validate args
             GeneBankCreateBTreeArguments arguments = new GeneBankCreateBTreeArguments(args);
             if (!arguments.validate()) {
                 return;
@@ -38,12 +49,13 @@ public class GeneBankCreateBTree
             
             long sequence;
             int seqLength = arguments.getSubsequenceLength();
-            
-            File gbkFile = new File(arguments.getGbkFileName());
-            
+            File gbkFile = new File(arguments.getGbkFileName()); 
             GeneBankFileReader reader = new GeneBankFileReader(gbkFile, seqLength);
-            
+
+            //create BTree
             BTree tree = new BTree(arguments.getDegree(), "btree.bt", seqLength, arguments.getUseCache(), arguments.getCacheSize());
+
+            //insert sequences from gbkfile into tree
             while ((sequence = reader.getNextSequence()) != -1) {
                 tree.insert(new TreeObject(sequence));
             }
@@ -82,10 +94,8 @@ public class GeneBankCreateBTree
                 }
 
                 s.close();
-                tree.close();
+                tree.close(); // ensure resources are closed and metadata is updated
             }
-
-            
         } 
         catch (Exception e) 
         {
@@ -95,7 +105,12 @@ public class GeneBankCreateBTree
         	printUsageAndExit(e.getMessage());
         }
     }
-    
+
+    /**
+     * Prints usage in event of error
+     * 
+     * @param errorMessage error message from exception
+     */
     private static void printUsageAndExit(String errorMessage){
         System.err.println(errorMessage);
         System.err.println("Usage: java cs321.create.GeneBankCreateBTree <use cache> <degree> <gbk file> <sequence length> [<cache size>] [<debug level>]");
