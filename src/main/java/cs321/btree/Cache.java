@@ -3,8 +3,11 @@ package cs321.btree;
 import java.util.HashMap;
 
 /**
- * The Cache class contains the means of
- * storing items in a single level cache
+ * The Cache class contains the means of storing items in a single level cache
+ * Utilizes a hashmap for constant time lookup along with a linked list to keep track of
+ * most used and least used nodes.
+ * 
+ * @author Andrew Kobus
  */
 public class Cache<T> {
     

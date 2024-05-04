@@ -588,8 +588,8 @@ public class BTree implements BTreeInterface {
      */
     public void close() {
         try {
-            disk.close();
             writeMetaData();
+            disk.close();
         } catch (IOException e) {
             System.out.println("Error when trying to close file channel");
             e.printStackTrace();

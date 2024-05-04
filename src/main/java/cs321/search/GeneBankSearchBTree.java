@@ -2,8 +2,6 @@ package cs321.search;
 
 import cs321.btree.BTree;
 import cs321.btree.TreeObject;
-import cs321.common.ParseArgumentException;
-import cs321.common.ParseArgumentUtils;
 import cs321.create.SequenceUtils;
 
 import java.io.File;
@@ -41,6 +39,7 @@ public class GeneBankSearchBTree
         int seqLength = arguments.getSeqLength();
         boolean useCache = arguments.getUseCache() == 1;
         int cacheSize = arguments.getCacheSize();
+        int debugLevel = arguments.getDebugLevel();
 
         BTree btree = new BTree(degree, btreefilename, seqLength, useCache, cacheSize);
 
@@ -48,20 +47,33 @@ public class GeneBankSearchBTree
         File queryfile = new File(arguments.getQueryFilename());
         Scanner queryScanner = new Scanner(queryfile);
         
+        long totalSearchTimeStart = System.currentTimeMillis();
+        // loop through all sequences in the query file
         while (queryScanner.hasNextLine()) {
+
             String sequence = queryScanner.nextLine();
-            long sequenceAsLong = SequenceUtils.dnaStringToLong(sequence);
+            long sequenceAsLong = SequenceUtils.dnaStringToLong(sequence); // convert sequence to long
 
             // search BTree for the sequence and its complement
+            long startTime = System.nanoTime();
             TreeObject foundObject = btree.search(sequenceAsLong);
+            long endTime = System.nanoTime();
+            long elapsedSearchTime = endTime - startTime;
+
+            // if a match is found, print the key and its frequency
             System.out.print("For query '" + sequence + "', ");
             if (foundObject != null) {
                 String foundSequence = SequenceUtils.longToDnaString(foundObject.getKey(), seqLength);
                 System.out.println("found: " + foundSequence + " " + foundObject.getCount());
+                if (debugLevel == 1) {
+                    System.out.println("\tsearch time: " + elapsedSearchTime + "ns");
+                }
             } else {
                 System.out.println("no key found");
             }
         }
+        long totalSearchTimeEnd = System.currentTimeMillis();
+        System.out.println("\n Total time to search: " + (totalSearchTimeEnd - totalSearchTimeStart) + "ms");
 
         queryScanner.close();
     }
