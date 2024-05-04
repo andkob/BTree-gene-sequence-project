@@ -76,28 +76,42 @@
 64. Create Project-log.md #149 commit 438e4aea686852f866cb19b697000685d467c626 `(Caleb Tolman)`
 65. database creation moved to createBTree #150 commit 20c2f47312d79f0ed73ab81caa5475f5f851fd30 `(Damon Wargo)`
 66. CreateBTreeArgs and CreateBTree updated #151 commit 12ede839f12112da726d1d99abe831017ac22506 `(Damon Wargo)`
-67. Added a bunch of omments #152 commit 438fa15cfae0f103ec378b7c5baac2d42b57c02f `(Damon Wargo)`
-68. Database tests fixed, .gitignore updated #153 commit 40362383a099c9526976975285284db186494bcc `(Damon Wargo)`
-69. added one line so searchBTree will work #154 commit 843e78cbe2751c36729c03f91985bf2ea9c8605d `(Andrew Kobus)` 
-70. fixed usage #155 commit d7ecf667a9a6258e9e341cf85ce61ca709981b53 `(Caleb Tolman)`
-71. getting README ready #156 commit 5d8c7718fc48266e37b9198d012bbb0418c0eb81 `(Caleb Tolman)`
-72. Changes to make BTree and dumpfile shell script work #157 commit 20d9faaf06bf992effada1bc77d261fbe26874fb `(Damon Wargo)`
-73. Tiny change to fix db creation #158 commit fa55b2db018a4c62f06259e349ea6e976bc4bab2 `(Damon Wargo)`
-74. added information for GeneBankSearchDatabase in output #159 commit f52d3bab439569e83cb734bf52f3af8bbf2419b6 `(Damon 75. comments
-75. comments #160 commit 71453ed9a1168030595499b3c8b512541887b2c9 `(Caleb Tolman)`
-76. comments #161 commit 4d3305091e639bb88bbce781ee74d69c123162fe `(Caleb Tolman)`
-77. search BTree done #162 commit 6034e29b3229688687e8e7eb6f81c07aa6e0a31b `(Andrew Kobus)`
-78. ok NOWW it works #163 commit 5fb4668b86081cbd72878953f47cf0d3e1fb1a45 `(Andrew Kobus)`
-79. comments #164 commit 9c7901979b7913bce57a07c3170c0bea295081fb `(Andrew Kobus)`
-80. project log update #165 commit baf88847630b337362c633dc286392934f5ea4f7 `(Caleb Tolman)`
-81. readme changes #166 commit ffd642699d9554f3720b7eef74f78b5f7ff91bee `(Damon Wargo)`
-82. ReadME #167 commit 836a314f55cf194e5d9b25c06ce112ea71cc266a `(Caleb Tolman)`
-83. merging to main #168 commit ed3986c8572891d1811841068a9accaf290faa4a `(Andrew Kobus)`
-84. Merge pull request #22 from andkob/beforeMergingToMain #169 commit 6c571f6271fed47b9dbd554aff4bf2a81a7d14e2 `(Andrew Kobus)`
-85. whoopsies #170 commit 908aec4d54300319009d4e8593fca33e57b0d713 `(Andrew Kobus)`
-86. deleted that weird journal thing #171 commit cdfe5da556bfa3e7e08d9f9b3771abf0a20e6112 `(Andrew Kobus)`
-87. project log update #172 commit c356da325cecfa371f9bfbc2716f1614a4565c65 `(Caleb Tolman)`
-88. another project log update #173 commit xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx `(student)`
+67. Added a bunch of omments #152 commit c3d226063050583b39a2337e27cba778ece4e749 `(Damon Wargo)`
+68. Database tests fixed, .gitignore updated #153 commit 48cf23be3c98001ca7f07e5ab6e43804ee40cddc `(Damon Wargo)`
+69. basic functionality #154 commit 81db479b7427d2b2f10095c14c4115f29957c69c `(Andrew Kobus)`
+70. lil search bug #155 commit 32013e1a379fb8250c6b6448fd02d8aebbaecfc7 `(Andrew Kobus)`
+71. added one line so searchBTree will work #156 commit 41ffb3736078fe123a485590a217c4f1fb52414e `(Andrew Kobus)`
+72. cache money #157 commit 08b00e4cc83e853d0d752f7aa67a98533e938d33 `(Caleb Tolman)`
+73. cache #158 commit a0bc0cb3ee9f156b52dd82005d1151dfe422f86b `(Caleb Tolman)`
+74. database creation moved to createBTree #159 commit 20c2f47312d79f0ed73ab81caa5475f5f851fd30 `(Damon Wargo)`
+75. CreateBTreeArgs and CreateBTree updated #160 commit 12ede839f12112da726d1d99abe831017ac22506 `(Damon Wargo)`
+76. Added a bunch of omments #161 commit 438fa15cfae0f103ec378b7c5baac2d42b57c02f `(Damon Wargo)`
+77. Database tests fixed, .gitignore updated #162 commit 40362383a099c9526976975285284db186494bcc `(Damon Wargo)`
+78. added one line so searchBTree will work #163 commit 843e78cbe2751c36729c03f91985bf2ea9c8605d `(Andrew Kobus)`
+79. implemented cache #164 commit b256cfc01d8c8ad84684fcdfe4e6332cb06f54c1 `(Andrew Kobus)`
+80. Merge branch 'searchBTree' into cache #165 commit 4d5943b4e5a0bccb1490d8ab31c11a2dd4fdb80a `(Andrew Kobus)`
+81. Merge pull request #21 from andkob/cache #166 commit ba0b7c493b49e598e2a94a2f44382a260d493beb `(Andrew Kobus)`
+82. merged CreateBTree_Database_Edits into searchBTree #167 commit 3919da12a548fa97f436568a7f303fd0383ab526 `(Andrew Kobus)`
+83. fixed usage #168 commit d7ecf667a9a6258e9e341cf85ce61ca709981b53 `(Caleb Tolman)`
+84. getting README ready #169 commit 5d8c7718fc48266e37b9198d012bbb0418c0eb81 `(Caleb Tolman)`
+85. Changes to make BTree and dumpfile shell script work #170 commit 20d9faaf06bf992effada1bc77d261fbe26874fb `(Damon Wargo)`
+86. Tiny change to fix db creation #171 commit fa55b2db018a4c62f06259e349ea6e976bc4bab2 `(Damon Wargo)`
+87. added information for GeneBankSearchDatabase in output #172 commit f52d3bab439569e83cb734bf52f3af8bbf2419b6 `(Damon 75. comments
+88. comments #173 commit 71453ed9a1168030595499b3c8b512541887b2c9 `(Caleb Tolman)`
+89. comments #174 commit 4d3305091e639bb88bbce781ee74d69c123162fe `(Caleb Tolman)`
+90. search BTree done #175 commit 6034e29b3229688687e8e7eb6f81c07aa6e0a31b `(Andrew Kobus)`
+91. ok NOWW it works #176 commit 5fb4668b86081cbd72878953f47cf0d3e1fb1a45 `(Andrew Kobus)`
+92. comments #177 commit 9c7901979b7913bce57a07c3170c0bea295081fb `(Andrew Kobus)`
+93. project log update #178 commit baf88847630b337362c633dc286392934f5ea4f7 `(Caleb Tolman)`
+94. readme changes #179 commit ffd642699d9554f3720b7eef74f78b5f7ff91bee `(Damon Wargo)`
+95. ReadME #180 commit 836a314f55cf194e5d9b25c06ce112ea71cc266a `(Caleb Tolman)`
+96. merging to main #181 commit ed3986c8572891d1811841068a9accaf290faa4a `(Andrew Kobus)`
+97. Merge pull request #22 from andkob/beforeMergingToMain #182 commit 6c571f6271fed47b9dbd554aff4bf2a81a7d14e2 `(Andrew Kobus)`
+98. whoopsies #183 commit 908aec4d54300319009d4e8593fca33e57b0d713 `(Andrew Kobus)`
+99. deleted that weird journal thing #184 commit cdfe5da556bfa3e7e08d9f9b3771abf0a20e6112 `(Andrew Kobus)`
+100. project log update #185 commit c356da325cecfa371f9bfbc2716f1614a4565c65 `(Caleb Tolman)`
+101. another project log update #186 commit eb6fa979a3dd57a27b85b6da401c46446e03e0f1 `(Caleb Tolman)`
+102. final project log #187 commit xxxxxxxxxxxxxxxxxxxxxxxxxxxx `(Caleb Tolman)`
 
 
 
