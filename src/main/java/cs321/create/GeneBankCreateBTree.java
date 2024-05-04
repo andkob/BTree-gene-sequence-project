@@ -73,7 +73,7 @@ public class GeneBankCreateBTree {
                 statement.executeUpdate("create table dna (sequence string, frequency integer)");
 
                 //insert data from dumpfile into database
-                File f = new File(arguments.getGbkFileName() + ".dump." + seqLength);
+                File f = new File("dump");
                 Scanner s = new Scanner(f);
                 String dbSequence;
                 int frequency;
