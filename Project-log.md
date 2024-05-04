@@ -126,7 +126,9 @@
 114. Cleanup and ReadMe update #199 commit 5225248f9c97c323e6c316cb2f96c0b3ec25b666 `(Damon Wargo)`
 115. FINAL readme edits #200 commit 128fbe47502b2051047be2d4c6f8488f9176ef49 `(Damon Wargo)`
 116. Delete results directory #201 commit eb2a301914262a9308ca5629fb14e8550ba704a2 `(Caleb Tolman)`
-117. final log update #202 commit xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx `(Caleb Tolman)`
+117. final log update #202 commit 0e71458ba324c63f9c8a5bdcbaaa091337ac8478 `(Caleb Tolman)`
+118. just kidding these are the final readme edits #203 commit ced55abe96951602fc1725b5571ee758c9386c9b `(Damon Wargo)`
+119. final final log update #204 commit xxxxxxxxxxxxxxxxxxxxxxxxxxxx `(Caleb Tolman)`
  
 
 
