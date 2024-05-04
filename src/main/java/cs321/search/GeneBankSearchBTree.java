@@ -54,7 +54,6 @@ public class GeneBankSearchBTree
             String sequence = queryScanner.nextLine();
             long sequenceAsLong = SequenceUtils.dnaStringToLong(sequence); // convert sequence to long
             long complementarySequence = SequenceUtils.getComplement(sequenceAsLong, seqLength);
-            String altsequence = SequenceUtils.longToDnaString(complementarySequence, seqLength);
 
             // search BTree for the sequence and its complement
             long startTime = System.nanoTime();

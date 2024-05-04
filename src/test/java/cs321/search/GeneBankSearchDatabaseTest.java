@@ -2,9 +2,6 @@ package cs321.search;
 
 import org.junit.Test;
 
-import cs321.btree.BTree;
-import cs321.create.GeneBankCreateBTree;
-
 import static org.junit.Assert.*;
 
 import java.io.File;

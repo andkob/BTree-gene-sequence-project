@@ -9,16 +9,16 @@ Wargo           | Damon           | Damon-W-BSU
 Tolman          | Caleb           | calebtolman
 
 # Test Results
-How many of the dumpfiles matched (using the check-dumpfiles.sh script)?
+### How many of the dumpfiles matched (using the check-dumpfiles.sh script)?
 
 When running the following commands: \
 sh create-btrees test0.gbk \
 sh check-dumpfiles.sh test0.gbk \
 100% of the dumpfiles matched
 
-When running the same commands with test5.gbk, 
+### How many of the query files results matched (using the check-queries.sh script)?
 
-How many of the query files results matched (using the check-queries.sh script)?
+100% of the query file results matched when using test0.gbk
 
 # Cache Performance Results
 | gbk file | degree | sequence length | cache | cache size | createBTree run time | searchBTree run time |
@@ -33,7 +33,6 @@ We did not run the code on AWS :(
 
 # Reflection
 
-Provide a reflection by each of the team member (in a separate subsection)
 
 ## Reflection (Andrew Kobus)
 Working on the GeneBank B-Tree project has been a highly educational and somewhat challenging experience. Throughout this project, I have developed a deeper understanding of how B-Trees function, especially in the context of managing large datasets such as genetic information. Initially, the task of parsing gene bank files and correctly inserting sequences into a B-Tree felt daunting; however, implementing the process improved my ability to manage file I/O operations and understand binary search trees more intricately.
@@ -54,5 +53,6 @@ The integration of a caching mechanism and the creation of a dump file for debug
 
 # Additional Notes
 
-GeneBankSearchBTree is functional, but we were not able to configure it to run succesfully with the given shell script
+We have GeneBankCreateBTree configured to create an SQL database as soon as the dumpfile is created, i.e., when the debug level is 1. This means that with larger GBK files like test5.gbk, running GeneBankCreateBTree with debug level 1 will take a massive amount of time due to the reading/writing costs of scanning such large files multiple times with a scanner and loading each of the scanner results into the database.  
 
+plz be gentle <3
