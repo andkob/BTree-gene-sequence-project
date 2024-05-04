@@ -95,8 +95,9 @@
 83. merging to main #168 commit ed3986c8572891d1811841068a9accaf290faa4a `(Andrew Kobus)`
 84. Merge pull request #22 from andkob/beforeMergingToMain #169 commit 6c571f6271fed47b9dbd554aff4bf2a81a7d14e2 `(Andrew Kobus)`
 85. whoopsies #170 commit 908aec4d54300319009d4e8593fca33e57b0d713 `(Andrew Kobus)`
-86. project log update #171 commit xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx `(Caleb Tolman)`
-87. something else #172 commit xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx `(student)`
+86. deleted that weird journal thing #171 commit cdfe5da556bfa3e7e08d9f9b3771abf0a20e6112 `(Andrew Kobus)`
+87. project log update #172 commit c356da325cecfa371f9bfbc2716f1614a4565c65 `(Caleb Tolman)`
+88. another project log update #173 commit xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx `(student)`
 
 
 
