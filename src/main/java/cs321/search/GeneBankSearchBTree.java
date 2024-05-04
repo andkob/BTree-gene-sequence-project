@@ -47,36 +47,33 @@ public class GeneBankSearchBTree
         File queryfile = new File(arguments.getQueryFilename());
         Scanner queryScanner = new Scanner(queryfile);
         
-        long totalSearchTimeStart = System.currentTimeMillis();
-        int totalMatches = 0;
+        // long totalSearchTimeStart = System.currentTimeMillis();
         // loop through all sequences in the query file
         while (queryScanner.hasNextLine()) {
 
             String sequence = queryScanner.nextLine();
             long sequenceAsLong = SequenceUtils.dnaStringToLong(sequence); // convert sequence to long
+            long complementarySequence = SequenceUtils.getComplement(sequenceAsLong, seqLength);
 
             // search BTree for the sequence and its complement
             long startTime = System.nanoTime();
             TreeObject foundObject = btree.search(sequenceAsLong);
+            TreeObject foundComplement = btree.search(complementarySequence);
             long endTime = System.nanoTime();
             long elapsedSearchTime = endTime - startTime;
 
             // if a match is found, print the key and its frequency
-            System.out.print("For query '" + sequence + "', ");
             if (foundObject != null) {
                 String foundSequence = SequenceUtils.longToDnaString(foundObject.getKey(), seqLength);
-                System.out.println("found: " + foundSequence + " " + foundObject.getCount());
-                totalMatches++;
+                int frequency = foundObject.getCount() + foundComplement.getCount();
+                System.out.println(foundSequence + " " + frequency);
                 if (debugLevel == 1) {
                     System.out.println("\tsearch time: " + elapsedSearchTime + "ns");
                 }
-            } else {
-                System.out.println("no key found");
             }
         }
-        long totalSearchTimeEnd = System.currentTimeMillis();
-        System.out.println("Total matches: " + totalMatches);
-        System.out.println("\n Total time to search: " + (totalSearchTimeEnd - totalSearchTimeStart) + "ms");
+        // long totalSearchTimeEnd = System.currentTimeMillis();
+        // System.out.println("\n Total time to search: " + (totalSearchTimeEnd - totalSearchTimeStart) + "ms");
 
         queryScanner.close();
     }
