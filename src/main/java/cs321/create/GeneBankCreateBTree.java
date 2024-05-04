@@ -108,7 +108,7 @@ public class GeneBankCreateBTree {
      */
     private static void printUsageAndExit(String errorMessage){
         System.err.println(errorMessage);
-        System.err.println("Usage: java cs321.create.GeneBankCreateBTree <use cache> <degree> <gbk file> <sequence length> [<cache size>] [<debug level>]");
+        System.err.println("Usage: java -jar build/libs/GeneBankCreateBTree.jar --cache=<0|1> --degree=<btree-degree> --gbkfile=<gbk-file> --length=<sequence-length> [--cachesize=<n>] [--debug=0|1]");
         System.err.println("<use cache>: 0 (no cache) or 1 (use cache)");
         System.err.println("<degree>: degree of the B-tree");
         System.err.println("<gbk file>: path to the gene bank file");
