@@ -34,7 +34,7 @@ public class BTree implements BTreeInterface {
     private int seqLength;
 //--------------------------------------------------------
     private boolean usingCache = false;
-    private static Cache<BTreeNode> cache;
+    private Cache<BTreeNode> cache;
 //--------------------------------------------------------
     /**
      * Constructs a BTree using the default degree and initializes it from a file
@@ -131,16 +131,15 @@ public class BTree implements BTreeInterface {
 //---------------------------------------------------------------------------------------
         // check if it is in the cache first
 		if(usingCache) {
-			LinkedList<BTreeNode> c = cache.getCacheLinkedList();
-			Iterator<BTreeNode> i = c.iterator(); 
-			while(i.hasNext()) {
-				BTreeNode retVal = i.next();
-				if(retVal.getLocation() == nodePointer) {
-                    cache.moveToTop(retVal);
-					return retVal;
-				}
-			}
-		}
+            BTreeNode existingNode = cache.getObject(nodePointer);
+
+            // add the node to the cache if the cache does not contain it
+            // or move it up to the top of the cache
+            if (existingNode != null) {
+                cache.addObject(nodePointer, existingNode);
+                return existingNode;
+            }
+        }
 //---------------------------------------------------------------------------------------
 
         // Create a new BTreeNode object to hold the read data
@@ -177,7 +176,7 @@ public class BTree implements BTreeInterface {
         // Insert into cache if cache is being utilized
 		if (usingCache) {
 			// Inserts new, updated node into cache
-			cache.addObject(node);
+			cache.addObject(nodePointer, node);
 		}
 //-----------------------------------------------------------------------------
 
@@ -223,7 +222,7 @@ public class BTree implements BTreeInterface {
         // Insert into cache if cache is being utilized
 		if (usingCache) {
 			// Inserts new, updated node into cache
-			cache.addObject(node);
+			cache.addObject(node.getLocation(), node);
 		}
 //------------------------------------------------------------------------------
     }
