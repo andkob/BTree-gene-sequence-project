@@ -11,9 +11,8 @@ import static org.junit.Assert.assertEquals;
  * are interpreted correctly and the appropriate values are set in the
  * GeneBankCreateBTreeArguments instance.
  *
- * @author Damon Wargo
- * @version 1.0
- * @since YYYY-MM-DD
+ * @author Team 06
+ * 
  */
 public class GeneBankCreateBTreeTest {
 
