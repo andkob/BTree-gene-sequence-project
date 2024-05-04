@@ -34,6 +34,8 @@ public class GeneBankSearchDatabase {
 
         try {
 
+            System.out.println("Attempting search...");
+
             connection = DriverManager.getConnection(url);
             Statement statement = connection.createStatement();
 
@@ -62,6 +64,9 @@ public class GeneBankSearchDatabase {
                     }
                     out.println(sequence + " " + frequency);
                 }
+
+                System.out.println("Search complete!");
+                System.out.println("Query result output to " + query + "-" + queryOutName + ".out" );
 
                 out.close();
 
