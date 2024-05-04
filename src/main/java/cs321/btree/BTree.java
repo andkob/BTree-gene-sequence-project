@@ -452,10 +452,8 @@ public class BTree implements BTreeInterface {
                 }
             }
             // Recursively visit the right child of the last key
-            // if (i == node.numKeys - 1 && node.children[i + 1] != -1) {
-                BTreeNode child = diskRead(node.children[node.numKeys]);
-                dumpNode(child, out);
-            // }
+            BTreeNode child = diskRead(node.children[node.numKeys]);
+            dumpNode(child, out);
         } else {
             // Leaf node, simply print all keys
             for (int i = 0; i < node.numKeys; i++) {
@@ -501,6 +499,9 @@ public class BTree implements BTreeInterface {
             BTreeNode nextNode = diskRead(node.children[i]);
             TreeObject foundKey = recursiveSearch(nextNode, key);
             if (foundKey == null) { // not found so go to the other child
+                if (i == 0) { // node not found because cannot go any further left in the children
+                    return null;
+                }
                 foundKey = recursiveSearch(diskRead(node.children[i - 1]), key);
             }
             return foundKey;
@@ -544,10 +545,12 @@ public class BTree implements BTreeInterface {
      * Closes the file channel associated with this B-Tree.
      * This should be called whenever you are done with this B-Tree
      * to prevent resource leaks and ensure proper file deletion.
+     * Also updates the metadata of the file.
      */
     public void close() {
         try {
             disk.close();
+            writeMetaData();
         } catch (IOException e) {
             System.out.println("Error when trying to close file channel");
             e.printStackTrace();
