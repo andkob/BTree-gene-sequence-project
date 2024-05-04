@@ -47,9 +47,10 @@ public class GeneBankCreateBTree {
             int seqLength = arguments.getSubsequenceLength();
             File gbkFile = new File(arguments.getGbkFileName()); 
             GeneBankFileReader reader = new GeneBankFileReader(gbkFile, seqLength);
+            String btreeFilename = gbkFile.getName() + ".btree.data." + seqLength;
 
             //create BTree
-            BTree tree = new BTree(arguments.getDegree(), "btree.bt", seqLength, arguments.getUseCache(), arguments.getCacheSize());
+            BTree tree = new BTree(arguments.getDegree(), btreeFilename, seqLength, arguments.getUseCache(), arguments.getCacheSize());
 
             //insert sequences from gbkfile into tree
             while ((sequence = reader.getNextSequence()) != -1) {
@@ -57,10 +58,39 @@ public class GeneBankCreateBTree {
             }
             
             //if debug level chosen, create dumpfile and databse from dumpfile
+            //if debug level chosen, create dumpfile and databse from dumpfile
             if (arguments.getDebugLevel() == 1) {
+            	PrintWriter printWriter = new PrintWriter(new FileWriter("dump")); // name of dump files
             	PrintWriter printWriter = new PrintWriter(new FileWriter("dump")); // name of dump files
                 tree.dumpToFile(printWriter);
                 printWriter.close();
+
+                //Create sql
+                Connection connection = null;
+                String databaseName = arguments.getGbkFileName();
+                databaseName = databaseName.substring(databaseName.indexOf("test"));
+                connection = DriverManager.getConnection("jdbc:sqlite:" + databaseName + "." + seqLength + ".db");
+
+                Statement statement = connection.createStatement();
+                statement.executeUpdate("drop table if exists dna");
+                statement.executeUpdate("create table dna (sequence string, frequency integer)");
+
+                //insert data from dumpfile into database
+                File f = new File("dump");
+                Scanner s = new Scanner(f);
+                String dbSequence;
+                int frequency;
+                while(s.hasNext()) {
+                    dbSequence = s.next();
+                    frequency = Integer.parseInt(s.next());
+                    statement.executeUpdate("insert into dna values('" + dbSequence + "', " + frequency + ")");
+                }
+
+            s.close();
+            tree.close(); // ensure resources are closed and metadata is updated
+
+            }
+
 
                 //Create sql
                 Connection connection = null;
@@ -107,6 +137,7 @@ public class GeneBankCreateBTree {
      */
     private static void printUsageAndExit(String errorMessage){
         System.err.println(errorMessage);
+        System.err.println("Usage: java -jar build/libs/GeneBankCreateBTree.jar --cache=<0|1> --degree=<btree-degree> --gbkfile=<gbk-file> --length=<sequence-length> [--cachesize=<n>] [--debug=0|1]");
         System.err.println("Usage: java -jar build/libs/GeneBankCreateBTree.jar --cache=<0|1> --degree=<btree-degree> --gbkfile=<gbk-file> --length=<sequence-length> [--cachesize=<n>] [--debug=0|1]");
         System.err.println("<use cache>: 0 (no cache) or 1 (use cache)");
         System.err.println("<degree>: degree of the B-tree");
