@@ -85,6 +85,7 @@ public class GeneBankCreateBTree {
                 }
 
             s.close();
+            tree.close(); // ensure resources are closed and metadata is updated
 
             }
 
