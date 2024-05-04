@@ -13,7 +13,7 @@ import java.util.Scanner;
  * whether to use a cache, and the cache size. The results of the search are printed to the standard output, indicating
  * whether each query sequence was found in the BTree and its frequency.
  *
- * @author Team 06
+ * @author Andrew Kobus
  * 
  */
 public class GeneBankSearchBTree
