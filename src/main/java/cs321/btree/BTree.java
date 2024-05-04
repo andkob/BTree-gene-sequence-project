@@ -499,7 +499,7 @@ public class BTree implements BTreeInterface {
             BTreeNode nextNode = diskRead(node.children[i]);
             TreeObject foundKey = recursiveSearch(nextNode, key);
             if (foundKey == null) { // not found so go to the other child
-                if (i == 0) { // node not found because cannot go any further left in the children
+                if (i == 0) { // cannot go any further left in the children so the key is not in the tree
                     return null;
                 }
                 foundKey = recursiveSearch(diskRead(node.children[i - 1]), key);
