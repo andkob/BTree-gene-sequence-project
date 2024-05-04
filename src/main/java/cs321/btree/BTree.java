@@ -1,5 +1,6 @@
 package cs321.btree;
 
+import java.util.Iterator;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -7,6 +8,7 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Arrays;
+import java.util.LinkedList;
 
 import cs321.create.SequenceUtils;
 
@@ -30,7 +32,10 @@ public class BTree implements BTreeInterface {
     private FileChannel disk; // Named this 'disk' for simplicity. All I/O operations should be done through this file channel.
     private int numKeys; // Total number of keys in the BTree
     private int seqLength;
-
+//--------------------------------------------------------
+    private boolean usingCache = false;
+    private Cache<BTreeNode> cache;
+//--------------------------------------------------------
     /**
      * Constructs a BTree using the default degree and initializes it from a file
      * if it exists, or creates a new one if it does not.
@@ -73,7 +78,12 @@ public class BTree implements BTreeInterface {
         this.degree = degree;
         this.nodeCount = 1;
         this.seqLength = seqLength;
-
+//--------------------------------------------------------------------
+        if(useCache) {
+			cache = new Cache<BTreeNode>(cacheSize);
+			this.usingCache = true;
+		}
+//--------------------------------------------------------------------
         File file = new File(filePath);
         try {
             if (file.exists()) { // Read in data from the file
@@ -118,6 +128,20 @@ public class BTree implements BTreeInterface {
      * @throws IOException if there is an error during reading
      */
     public BTreeNode diskRead(long nodePointer) throws IOException {
+//---------------------------------------------------------------------------------------
+        // check if it is in the cache first
+		if(usingCache) {
+            BTreeNode existingNode = cache.getObject(nodePointer);
+
+            // add the node to the cache if the cache does not contain it
+            // or move it up to the top of the cache
+            if (existingNode != null) {
+                cache.addObject(nodePointer, existingNode);
+                return existingNode;
+            }
+        }
+//---------------------------------------------------------------------------------------
+
         // Create a new BTreeNode object to hold the read data
         BTreeNode node = new BTreeNode(degree);
         int nodeSize = node.getNodeSize(); // Determine the size of the node for the byte buffer
@@ -147,6 +171,14 @@ public class BTree implements BTreeInterface {
                 node.children[i] = nodeBuffer.getLong(); // Read the child pointer
             }
         }
+
+//-----------------------------------------------------------------------------
+        // Insert into cache if cache is being utilized
+		if (usingCache) {
+			// Inserts new, updated node into cache
+			cache.addObject(nodePointer, node);
+		}
+//-----------------------------------------------------------------------------
 
         return node;
     }
@@ -186,6 +218,13 @@ public class BTree implements BTreeInterface {
         buffer.flip();
         disk.position(node.getLocation());
         disk.write(buffer);
+//-----------------------------------------------------------------------------
+        // Insert into cache if cache is being utilized
+		if (usingCache) {
+			// Inserts new, updated node into cache
+			cache.addObject(node.getLocation(), node);
+		}
+//------------------------------------------------------------------------------
     }
 
     @Override

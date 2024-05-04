@@ -19,6 +19,10 @@ public class GeneBankCreateBTree
     public GeneBankCreateBTree(String args[]) {
         try 
         {
+            long startTime = 0;
+            long endTime = 0;
+            startTime = System.currentTimeMillis();
+
             // TODO - delete this later 
             File btreeFile = new File("btree.bt");
             if (btreeFile.exists()) {
@@ -43,6 +47,12 @@ public class GeneBankCreateBTree
             while ((sequence = reader.getNextSequence()) != -1) {
                 tree.insert(new TreeObject(sequence));
             }
+            
+//------------------------------------------------------------------------------------------------------
+            endTime = System.currentTimeMillis();            
+            long elapsedTime = endTime - startTime;
+            System.out.println("Elapsed Time: " + elapsedTime / 1000 + " seconds");
+//------------------------------------------------------------------------------------------------------        
             
             if (arguments.getDebugLevel() == 1) {
             	PrintWriter printWriter = new PrintWriter(new FileWriter(arguments.getGbkFileName() + ".dump." + seqLength)); // name of dump files
@@ -71,8 +81,8 @@ public class GeneBankCreateBTree
                     statement.executeUpdate("insert into dna values('" + dbSequence + "', " + frequency + ")");
                 }
 
-            s.close();
-
+                s.close();
+                tree.close();
             }
 
             
@@ -84,7 +94,6 @@ public class GeneBankCreateBTree
         	System.err.println();
         	printUsageAndExit(e.getMessage());
         }
-
     }
     
     private static void printUsageAndExit(String errorMessage){
