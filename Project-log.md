@@ -121,7 +121,12 @@
 109. Create org.eclipse.buildship.core.prefs #194 commit d662ddf6a721c51eb250dd9cc083bc4d27eab51d `(Caleb Tolman)`
 110. Delete .settings/.settings directory #195 commit 572e9861fb7229d55d2cd7ba2ec36c25e6ddaf38 `(Caleb Tolman)`
 111. Create org.eclipse.buildship.core.prefs #196 commit b2fcbfece872f5cf40597c0707356345d5b6855a `(Caleb Tolman)`
-112. update project log #197 commit xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx `(Caleb Tolman)`
+112. update project log #197 commit 77f35fcd4671f973c8c75112c87c6131a4ed8862 `(Caleb Tolman)`
+113. ALL SHELL SCRIPTS RUNNING SUCCESFULLY #198 commit 8e5f6dfb3f15af452c70bac1eef02296db486db6 `(Damon Wargo)`
+114. Cleanup and ReadMe update #199 commit 5225248f9c97c323e6c316cb2f96c0b3ec25b666 `(Damon Wargo)`
+115. FINAL readme edits #200 commit 128fbe47502b2051047be2d4c6f8488f9176ef49 `(Damon Wargo)`
+116. Delete results directory #201 commit eb2a301914262a9308ca5629fb14e8550ba704a2 `(Caleb Tolman)`
+117. final log update #202 commit xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx `(Caleb Tolman)`
  
 
 
