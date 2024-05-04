@@ -14,6 +14,11 @@ public class GeneBankCreateBTree
 {
 
     public static void main(String[] args) throws Exception {
+        long startTime = 0;
+        long endTime = 0;
+
+        startTime = System.currentTimeMillis();
+
         try 
         {
             // TODO - delte this later 
@@ -59,6 +64,9 @@ public class GeneBankCreateBTree
 
                 //insert data from dumpfile into database
                 System.out.println(arguments.getGbkFileName() + ".dump." + seqLength);
+                endTime = System.currentTimeMillis();
+                long elapsedTime = endTime - startTime;
+                System.out.println("Elapsed Time: " + elapsedTime + "milliseconds");
                 File f = new File(arguments.getGbkFileName() + ".dump." + seqLength);
                 Scanner s = new Scanner(f);
                 String dbSequence;
@@ -69,7 +77,7 @@ public class GeneBankCreateBTree
                     statement.executeUpdate("insert into dna values('" + dbSequence + "', " + frequency + ")");
                 }
 
-            s.close();
+                s.close();
 
             }
 
@@ -82,6 +90,11 @@ public class GeneBankCreateBTree
         	System.err.println();
         	printUsageAndExit(e.getMessage());
         }
+
+        // endTime = System.currentTimeMillis();
+        // long elapsedTime = endTime - startTime;
+        // System.out.println("Elapsed Time: " + elapsedTime + "milliseconds");
+
     }
 
     private static GeneBankCreateBTreeArguments parseArgumentsAndHandleExceptions(String[] args) {
