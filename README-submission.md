@@ -1,12 +1,12 @@
-# Team Name
+# Team 06
 
 # Team Members
 
 Last Name       | First Name      | GitHub User Name
 --------------- | --------------- | --------------------
-TBD             | TBD             | TBD
-TBD             | TBD             | TBD
-TBD             | TBD             | TBD
+Kobus           | Andrew          | andkob
+Wargo           | Damon           | Damon-W-BSU
+Tolman          | Caleb           | calebtolman
 
 # Test Results
 How many of the dumpfiles matched (using the check-dumpfiles.sh script)?
@@ -14,23 +14,23 @@ How many of the dumpfiles matched (using the check-dumpfiles.sh script)?
 How many of the query files results matched (using the check-queries.sh script)?
 
 # Cache Performance Results
-For the test data `test5.gbk`, how much did a Cache of size 100 improve your performance compared to no cache.
-
-For the test data `test5.gbk`, how much did a Cache of size 500 improve your performance compared to no cache? 
-
-For the test data `test5.gbk`, how much did a Cache of size 5000 improve your performance compared to no cache?
-
+| gbk file | degree | sequence length | cache | cache size | createBTree run time | searchBTree run time |
+| -------- | ------ | --------------- | ----- | ---------- | -------------------- | -------------------- |
+| test5.gbk|  101   |     20          |  no   |    0       |        29.52s        |        29.52s        |
+| test5.gbk|  101   |     20          |  yes  |    100     |        12.56s        |        12.56s        |
+| test5.gbk|  101   |     20          |  yes  |    500     |        10.22s        |        10.22s        |
+| test5.gbk|  101   |     20          |  yes  |    5000    |        5.08s         |        5.08s         |
 
 # AWS Notes
-Brief reflection on your experience with running your code on AWS.
+We did not run the code on AWS :(
 
 # Reflection
 
 Provide a reflection by each of the team member (in a separate subsection)
 
-## Reflection (Team member name: )
-## Reflection (Team member name: )
-## Reflection (Team member name: )
+## Reflection (Andrew Kobus)
+## Reflection (Damon Wargo)
+## Reflection (Caleb Tolman)
 
 # Additional Notes
 TBD
