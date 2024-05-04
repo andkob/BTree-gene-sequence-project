@@ -61,7 +61,6 @@ public class GeneBankCreateBTree {
             //if debug level chosen, create dumpfile and databse from dumpfile
             if (arguments.getDebugLevel() == 1) {
             	PrintWriter printWriter = new PrintWriter(new FileWriter("dump")); // name of dump files
-            	PrintWriter printWriter = new PrintWriter(new FileWriter("dump")); // name of dump files
                 tree.dumpToFile(printWriter);
                 printWriter.close();
 
@@ -86,39 +85,9 @@ public class GeneBankCreateBTree {
                     statement.executeUpdate("insert into dna values('" + dbSequence + "', " + frequency + ")");
                 }
 
-            s.close();
-            tree.close(); // ensure resources are closed and metadata is updated
-
+                s.close();
+                tree.close(); // ensure resources are closed and metadata is updated
             }
-
-
-                //Create sql
-                Connection connection = null;
-                String databaseName = arguments.getGbkFileName();
-                databaseName = databaseName.substring(databaseName.indexOf("test"));
-                connection = DriverManager.getConnection("jdbc:sqlite:" + databaseName + "." + seqLength + ".db");
-
-                Statement statement = connection.createStatement();
-                statement.executeUpdate("drop table if exists dna");
-                statement.executeUpdate("create table dna (sequence string, frequency integer)");
-
-                //insert data from dumpfile into database
-                File f = new File("dump");
-                Scanner s = new Scanner(f);
-                String dbSequence;
-                int frequency;
-                while(s.hasNext()) {
-                    dbSequence = s.next();
-                    frequency = Integer.parseInt(s.next());
-                    statement.executeUpdate("insert into dna values('" + dbSequence + "', " + frequency + ")");
-                }
-
-            s.close();
-            tree.close(); // ensure resources are closed and metadata is updated
-
-            }
-
-            
         } 
         catch (Exception e) 
         {
