@@ -24,17 +24,6 @@ public class GeneBankCreateBTree
     public GeneBankCreateBTree(String args[]) {
         try 
         {
-            long startTime = 0;
-            long endTime = 0;
-            startTime = System.currentTimeMillis();
-
-            // TODO - delete this later 
-            File btreeFile = new File("btree.bt");
-            if (btreeFile.exists()) {
-                btreeFile.delete();
-            }
-            //
-
             //validate args
             GeneBankCreateBTreeArguments arguments = new GeneBankCreateBTreeArguments(args);
             if (!arguments.validate()) {
@@ -45,23 +34,19 @@ public class GeneBankCreateBTree
             int seqLength = arguments.getSubsequenceLength();
             File gbkFile = new File(arguments.getGbkFileName()); 
             GeneBankFileReader reader = new GeneBankFileReader(gbkFile, seqLength);
+            String btreeFilename = gbkFile.getName() + ".btree.data." + seqLength;
 
             //create BTree
-            BTree tree = new BTree(arguments.getDegree(), "btree.bt", seqLength, arguments.getUseCache(), arguments.getCacheSize());
+            BTree tree = new BTree(arguments.getDegree(), btreeFilename, seqLength, arguments.getUseCache(), arguments.getCacheSize());
 
             //insert sequences from gbkfile into tree
             while ((sequence = reader.getNextSequence()) != -1) {
                 tree.insert(new TreeObject(sequence));
             }
             
-//------------------------------------------------------------------------------------------------------
-            endTime = System.currentTimeMillis();            
-            long elapsedTime = endTime - startTime;
-            System.out.println("Elapsed Time: " + elapsedTime / 1000 + " seconds");
-//------------------------------------------------------------------------------------------------------        
-            
+            //if debug level chosen, create dumpfile and databse from dumpfile
             if (arguments.getDebugLevel() == 1) {
-            	PrintWriter printWriter = new PrintWriter(new FileWriter(arguments.getGbkFileName() + ".dump." + seqLength)); // name of dump files
+            	PrintWriter printWriter = new PrintWriter(new FileWriter("dump")); // name of dump files
                 tree.dumpToFile(printWriter);
                 printWriter.close();
 
@@ -76,8 +61,7 @@ public class GeneBankCreateBTree
                 statement.executeUpdate("create table dna (sequence string, frequency integer)");
 
                 //insert data from dumpfile into database
-                System.out.println(arguments.getGbkFileName() + ".dump." + seqLength);
-                File f = new File(arguments.getGbkFileName() + ".dump." + seqLength);
+                File f = new File("dump");
                 Scanner s = new Scanner(f);
                 String dbSequence;
                 int frequency;
@@ -87,9 +71,12 @@ public class GeneBankCreateBTree
                     statement.executeUpdate("insert into dna values('" + dbSequence + "', " + frequency + ")");
                 }
 
-                s.close();
-                tree.close(); // ensure resources are closed and metadata is updated
+            s.close();
+            tree.close(); // ensure resources are closed and metadata is updated
+
             }
+
+            
         } 
         catch (Exception e) 
         {
@@ -98,11 +85,12 @@ public class GeneBankCreateBTree
         	System.err.println();
         	printUsageAndExit(e.getMessage());
         }
+
     }
     
     private static void printUsageAndExit(String errorMessage){
         System.err.println(errorMessage);
-        System.err.println("Usage: java cs321.create.GeneBankCreateBTree <use cache> <degree> <gbk file> <sequence length> [<cache size>] [<debug level>]");
+        System.err.println("Usage: java -jar build/libs/GeneBankCreateBTree.jar --cache=<0|1> --degree=<btree-degree> --gbkfile=<gbk-file> --length=<sequence-length> [--cachesize=<n>] [--debug=0|1]");
         System.err.println("<use cache>: 0 (no cache) or 1 (use cache)");
         System.err.println("<degree>: degree of the B-tree");
         System.err.println("<gbk file>: path to the gene bank file");

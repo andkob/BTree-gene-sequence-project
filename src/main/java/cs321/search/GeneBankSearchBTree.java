@@ -48,6 +48,7 @@ public class GeneBankSearchBTree
         Scanner queryScanner = new Scanner(queryfile);
         
         long totalSearchTimeStart = System.currentTimeMillis();
+        int totalMatches = 0;
         // loop through all sequences in the query file
         while (queryScanner.hasNextLine()) {
 
@@ -65,6 +66,7 @@ public class GeneBankSearchBTree
             if (foundObject != null) {
                 String foundSequence = SequenceUtils.longToDnaString(foundObject.getKey(), seqLength);
                 System.out.println("found: " + foundSequence + " " + foundObject.getCount());
+                totalMatches++;
                 if (debugLevel == 1) {
                     System.out.println("\tsearch time: " + elapsedSearchTime + "ns");
                 }
@@ -73,6 +75,7 @@ public class GeneBankSearchBTree
             }
         }
         long totalSearchTimeEnd = System.currentTimeMillis();
+        System.out.println("Total matches: " + totalMatches);
         System.out.println("\n Total time to search: " + (totalSearchTimeEnd - totalSearchTimeStart) + "ms");
 
         queryScanner.close();
