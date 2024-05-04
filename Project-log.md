@@ -73,14 +73,19 @@
 61. BTree bugs are gonezo #146 commit 9cc1cba6c4fec7904b8c2f3925c725fbbbe90651 `(Andrew Kobus)`
 62. Merge branch 'main' into editingCreateBTreePart2 #147 commit c37bf78b7503b6e70fab267a8f139bf22600bf3c `(Andrew Kobus)`
 63. Merge pull request #18 from andkob/editingCreateBTreePart2 #148 commit fcbd704b788e0a68555c31ef4b9d2e7d2674fb82 `(Andrew Kobus)`
+64. Create Project-log.md #149 commit 438e4aea686852f866cb19b697000685d467c626 `(Caleb Tolman)`
+65. database creation moved to createBTree #150 commit 20c2f47312d79f0ed73ab81caa5475f5f851fd30 `(Damon Wargo)`
+66. CreateBTreeArgs and CreateBTree updated #151 commit 12ede839f12112da726d1d99abe831017ac22506 `(Damon Wargo)`
+67. Added a bunch of omments #152 commit 438fa15cfae0f103ec378b7c5baac2d42b57c02f `(Damon Wargo)`
+68. Database tests fixed, .gitignore updated #153 commit 40362383a099c9526976975285284db186494bcc `(Damon Wargo)`
+69. added one line so searchBTree will work #154 commit 843e78cbe2751c36729c03f91985bf2ea9c8605d `(Andrew Kobus)` 
+70. fixed usage #155 commit d7ecf667a9a6258e9e341cf85ce61ca709981b53 `(Caleb Tolman)`
+71. getting README ready #156 commit 5d8c7718fc48266e37b9198d012bbb0418c0eb81 `(Caleb Tolman)`
+72. Changes to make BTree and dumpfile shell script work #157 commit 20d9faaf06bf992effada1bc77d261fbe26874fb `(Damon Wargo)`
+73. Tiny change to fix db creation #158 commit fa55b2db018a4c62f06259e349ea6e976bc4bab2 `(Damon Wargo)`
+74. added information for GeneBankSearchDatabase in output #159 commit f52d3bab439569e83cb734bf52f3af8bbf2419b6 `(Damon Wargo)`
+75. Final Merge #160 commit xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx `(student)`
 
-64. Create Project-log.md #149 commit 3ed6efff8881208b7eef2788f5fe7675698aef9b `(Caleb Tolman)`
-65. Closes #150 commit 3ed6efff8881208b7eef2788f5fe7675698aef9b `(studentB)`
-66. Closes #150 commit 3ed6efff8881208b7eef2788f5fe7675698aef9b `(studentB)`
-67. Closes #150 commit 3ed6efff8881208b7eef2788f5fe7675698aef9b `(studentB)`
-68. Closes #150 commit 3ed6efff8881208b7eef2788f5fe7675698aef9b `(studentB)`
-69. Closes #150 commit 3ed6efff8881208b7eef2788f5fe7675698aef9b `(studentB)` 
-70. Closes #150 commit 3ed6efff8881208b7eef2788f5fe7675698aef9b `(studentB)`
 
 
 
