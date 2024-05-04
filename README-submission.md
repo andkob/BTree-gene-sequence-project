@@ -23,10 +23,10 @@ sh check-dumpfiles.sh test0.gbk \
 # Cache Performance Results
 | gbk file | degree | sequence length | cache | cache size | createBTree run time | searchBTree run time |
 | -------- | ------ | --------------- | ----- | ---------- | -------------------- | -------------------- |
-| test5.gbk|  101   |     20          |  no   |    0       |         74s          |        29.52s        |
-| test5.gbk|  101   |     20          |  yes  |    100     |         73s          |        12.56s        |
-| test5.gbk|  101   |     20          |  yes  |    500     |         70s          |        10.22s        |
-| test5.gbk|  101   |     20          |  yes  |    5000    |         62s          |        5.08s         |
+| test5.gbk|  101   |     20          |  no   |    0       |         65.942s          |        312ms        |
+| test5.gbk|  101   |     20          |  yes  |    100     |         68.194s          |        308ms       |
+| test5.gbk|  101   |     20          |  yes  |    500     |         62.671s          |        306ms        |
+| test5.gbk|  101   |     20          |  yes  |    5000    |         53.193s          |        316ms         |
 
 # AWS Notes
 We did not run the code on AWS :(
@@ -54,5 +54,7 @@ The integration of a caching mechanism and the creation of a dump file for debug
 # Additional Notes
 
 We have GeneBankCreateBTree configured to create an SQL database as soon as the dumpfile is created, i.e., when the debug level is 1. This means that with larger GBK files like test5.gbk, running GeneBankCreateBTree with debug level 1 will take a massive amount of time due to the reading/writing costs of scanning such large files multiple times with a scanner and loading each of the scanner results into the database.  
+
+We implemented a cache with a hashtable as part of the implementation, but we weren't able to improve our runtimes. We aren't sure if this is an issue with our cache itself, or the way we implemented cache into the DiskRead() and DiskWrite() methods
 
 plz be gentle <3
