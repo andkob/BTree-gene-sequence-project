@@ -9,14 +9,8 @@ import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.Scanner;
 
-/**
- * Creates a BTree with specified values from command line
- * for cache usage, cachesize, degree, sequence length,
- * gbkfile, and debug level 
- * 
- * @author Andrew Kobus, Damon Wargo
- */
-public class GeneBankCreateBTree {
+public class GeneBankCreateBTree
+{
 
     public static void main(String[] args) throws Exception {
         new GeneBankCreateBTree(args);
@@ -105,12 +99,7 @@ public class GeneBankCreateBTree {
         	printUsageAndExit(e.getMessage());
         }
     }
-
-    /**
-     * Prints usage in event of error
-     * 
-     * @param errorMessage error message from exception
-     */
+    
     private static void printUsageAndExit(String errorMessage){
         System.err.println(errorMessage);
         System.err.println("Usage: java cs321.create.GeneBankCreateBTree <use cache> <degree> <gbk file> <sequence length> [<cache size>] [<debug level>]");

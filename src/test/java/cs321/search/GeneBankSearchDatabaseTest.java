@@ -14,8 +14,20 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * Unit tests for the GeneBankSearchDatabase class, which is responsible for searching
+ * DNA sequences in a database. These tests verify the correct initialization of the class,
+ * the existence of dump files, and the accessibility of results from the database.
+ * 
+ * @author Team 06
+ * 
+ */
 public class GeneBankSearchDatabaseTest {
 
+    /**
+     * Tests the initialization of GeneBankSearchDatabase with provided arguments.
+     * Checks whether the constructed URLs and query file paths are as expected.
+     */
     @Test
     public void testGeneBankSearchDatabaseArgs() {
 
@@ -27,6 +39,11 @@ public class GeneBankSearchDatabaseTest {
 
     }
 
+    /**
+     * Verifies that the expected dump file is created as a result of the search operation.
+     * This test ensures that the file creation part of the search process is functioning
+     * as expected.
+     */
     @Test
     public void testGeneBankSearchDumpFileExists() {
 
@@ -45,6 +62,11 @@ public class GeneBankSearchDatabaseTest {
         file.delete();
     }
 
+    /**
+     * Tests that a valid result set is obtained when querying the DNA database.
+     * This test ensures that the database is properly queried and can return results,
+     * indicating the functional integrity of the SQL execution within the application.
+     */
     @Test
     public void testGeneBankSearchResultSetExists() {
         String args[] = {"--database=test.db", "--queryfile=data/queries/query5"};

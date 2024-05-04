@@ -2,6 +2,16 @@ package cs321.search;
 
 import java.io.File;
 
+/**
+ * Parses and validates command-line arguments for the GeneBankSearchBTree application.
+ * This class is responsible for checking the correctness of parameters such as B-tree file name,
+ * sequence length, query file name, and cache settings. It ensures that all provided arguments
+ * meet the expected criteria and are within valid ranges or formats before they are used to
+ * initialize a BTree search.
+ *
+ * @author Team 06
+ * 
+ */
 public class GeneBankSearchBTreeArguments {
     private int useCache;
     private int degree;
@@ -12,6 +22,13 @@ public class GeneBankSearchBTreeArguments {
     private int debugLevel;
     private boolean validArgs;
 
+    /**
+     * Constructor that takes an array of command-line arguments and parses them to set up
+     * configuration parameters for a BTree search. It validates the parameters and indicates
+     * if any are invalid, providing usage information if necessary.
+     *
+     * @param args Array of command-line arguments to be parsed and validated.
+     */
     public GeneBankSearchBTreeArguments(String[] args) {
         if (args.length < 5 || args.length > 7) {
             printUsage();
@@ -122,10 +139,21 @@ public class GeneBankSearchBTreeArguments {
         }
     }
 
+    /**
+     * Validates the parsed arguments to ensure they meet the required criteria and formats.
+     * This method is used to confirm that all necessary parameters are valid before proceeding
+     * with the BTree search setup.
+     *
+     * @return true if all arguments are valid, false otherwise.
+     */
     public boolean validate() {
         return validArgs;
     }
 
+    /**
+     * Prints the usage information for the GeneBankSearchBTree application. This method is called
+     * when invalid arguments are provided, guiding the user on how to correctly use the application.
+     */
     private void printUsage() {
         System.out.println("java -jar build/libs/GeneBankSearchBTree.jar --cache=<0/1> "
         + "--degree=<btree-degree> "
@@ -134,30 +162,65 @@ public class GeneBankSearchBTreeArguments {
         );
     }
 
+    /**
+     * Retrieves the cache usage setting from the arguments.
+     * 
+     * @return the cache usage setting as an integer.
+     */
     public int getUseCache() {
         return useCache;
     }
 
+    /**
+     * Retrieves the degree of the B-tree from the arguments.
+     * 
+     * @return the degree of the B-tree as an integer.
+     */
     public int getDegree() {
         return degree;
     }
 
+    /**
+     * Retrieves the filename of the B-tree from the arguments.
+     * 
+     * @return the B-tree filename as a string.
+     */
     public String getBtreeFilename() {
         return btreeFilename;
     }
 
+    /**
+     * Retrieves the sequence length from the arguments.
+     * 
+     * @return the sequence length as an integer.
+     */
     public int getSeqLength() {
         return seqLength;
     }
 
+    /**
+     * Retrieves the query file name from the arguments.
+     * 
+     * @return the query file name as a string.
+     */
     public String getQueryFilename() {
         return queryFilename;
     }
 
+    /**
+     * Retrieves the cache size from the arguments.
+     * 
+     * @return the cache size as an integer.
+     */
     public int getCacheSize() {
         return cacheSize;
     }
 
+    /**
+     * Retrieves the debug level from the arguments.
+     * 
+     * @return the debug level as an integer.
+     */
     public int getDebugLevel() {
         return debugLevel;
     }

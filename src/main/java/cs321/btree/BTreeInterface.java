@@ -3,6 +3,11 @@ package cs321.btree;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+/**
+ * Defines the operations that a BTree must support. This interface outlines methods for
+ * basic BTree functionalities such as insertion, deletion, searching, and retrieving statistical
+ * information about the BTree structure like its size, degree, number of nodes, and height.
+ */
 public interface BTreeInterface {
 
     /**

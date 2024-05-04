@@ -9,9 +9,25 @@ import cs321.create.SequenceUtils;
 import java.io.File;
 import java.util.Scanner;
 
+/**
+ * This class is designed to search a BTree for specific DNA sequences provided in a query file.
+ * It utilizes command-line arguments to configure the search process, including the specification of the BTree file,
+ * whether to use a cache, and the cache size. The results of the search are printed to the standard output, indicating
+ * whether each query sequence was found in the BTree and its frequency.
+ *
+ * @author Team 06
+ * 
+ */
 public class GeneBankSearchBTree
 {
 
+    /**
+     * Main method to run GeneBankSearchBTree. It initializes the BTree with the specified configuration and performs searches
+     * based on sequences listed in the query file.
+     *
+     * @param args the command-line arguments, specifying the BTree file, query file, whether to use cache, and the cache size.
+     * @throws Exception if there is an error during the BTree operation or file handling.
+     */
     public static void main(String[] args) throws Exception
     {
         GeneBankSearchBTreeArguments arguments = new GeneBankSearchBTreeArguments(args);
