@@ -40,7 +40,7 @@ public class GeneBankCreateBTree {
             int seqLength = arguments.getSubsequenceLength();
             File gbkFile = new File(arguments.getGbkFileName()); 
             GeneBankFileReader reader = new GeneBankFileReader(gbkFile, seqLength);
-            String btreeFilename = gbkFile.getName() + ".btree.data." + seqLength;
+            String btreeFilename = gbkFile.getName() + ".btree.data." + seqLength + ".0";
 
             //create BTree
             BTree tree = new BTree(arguments.getDegree(), btreeFilename, seqLength, arguments.getUseCache(), arguments.getCacheSize());
