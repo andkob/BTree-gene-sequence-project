@@ -60,28 +60,28 @@ public class GeneBankCreateBTree {
                 tree.dumpToFile(printWriter);
                 printWriter.close();
 
-                //Create sql
-                Connection connection = null;
-                String databaseName = arguments.getGbkFileName();
-                databaseName = databaseName.substring(databaseName.indexOf("test"));
-                connection = DriverManager.getConnection("jdbc:sqlite:" + databaseName + "." + seqLength + ".db");
+                // //Create sql
+                // Connection connection = null;
+                // String databaseName = arguments.getGbkFileName();
+                // databaseName = databaseName.substring(databaseName.indexOf("test"));
+                // connection = DriverManager.getConnection("jdbc:sqlite:" + databaseName + "." + seqLength + ".db");
 
-                Statement statement = connection.createStatement();
-                statement.executeUpdate("drop table if exists dna");
-                statement.executeUpdate("create table dna (sequence string, frequency integer)");
+                // Statement statement = connection.createStatement();
+                // statement.executeUpdate("drop table if exists dna");
+                // statement.executeUpdate("create table dna (sequence string, frequency integer)");
 
-                //insert data from dumpfile into database
-                File f = new File("dump");
-                Scanner s = new Scanner(f);
-                String dbSequence;
-                int frequency;
-                while(s.hasNext()) {
-                    dbSequence = s.next();
-                    frequency = Integer.parseInt(s.next());
-                    statement.executeUpdate("insert into dna values('" + dbSequence + "', " + frequency + ")");
-                }
+                // //insert data from dumpfile into database
+                // File f = new File("dump");
+                // Scanner s = new Scanner(f);
+                // String dbSequence;
+                // int frequency;
+                // while(s.hasNext()) {
+                //     dbSequence = s.next();
+                //     frequency = Integer.parseInt(s.next());
+                //     statement.executeUpdate("insert into dna values('" + dbSequence + "', " + frequency + ")");
+                // }
 
-                s.close();
+                // s.close();
                 tree.close(); // ensure resources are closed and metadata is updated
             }
         } 

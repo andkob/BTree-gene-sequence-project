@@ -1,4 +1,5 @@
 package cs321.create;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -7,94 +8,58 @@ import java.io.IOException;
  * GeneBankFileDeader parses GBK files
  * and outputs DNA sequences of a specified length
  * 
- * @author Damon Wargo
+ * @author Andrew Kobus
  */
-public class GeneBankFileReader implements GeneBankFileReaderInterface  {
+public class GeneBankFileReader implements GeneBankFileReaderInterface {
 
-    int seqLength;
-    int trackedIndex = 0; //index to start parsing at
-    boolean originFound = false;
-    FileReader f;
-    StringBuilder sb;
-    String fileAsString;
+    private BufferedReader reader;
+    private int seqLength;
+    private boolean originFound = false;
+    private boolean eof = false;
 
-    /**
-     * Constructor for GeneBankFileReader
-     * with specified file and sequencelength
-     * 
-     * @param file GBK file to parse
-     * @param seqLength length of DNA sequences to return
-     * @throws IOException On file read error
-     */
     public GeneBankFileReader(File file, int seqLength) throws IOException {
-
         this.seqLength = seqLength;
-        //build string with characters read from file
-        f = new FileReader(file);
-        sb = new StringBuilder();
-        int current = 0;
-
-        while((current = f.read()) != -1) {
-            sb.append((char)current);
-        }
-        fileAsString = sb.toString();
-        trackedIndex = 0;
+        reader = new BufferedReader(new FileReader(file));
     }
 
     @Override
     public long getNextSequence() throws IOException {
-        String sequence = "";
-        char currentChar;
+        StringBuilder sequenceBuilder = new StringBuilder();
         int charsAdded = 0;
-
-        //parse only in ORIGIN section
-        if(!originFound) {
-            checkForOrigin(trackedIndex);
-        }
-
-        if(originFound) {
-            for(int i = trackedIndex; i < sb.length(); i++) {
-                currentChar = sb.charAt(i);
-                //end of ORIGIN section
-                if (currentChar == '/') {
-                    originFound = false;
-                    trackedIndex++;
-                    //recursion gauruntees sequence or EOF
-                    return getNextSequence();
-                } else if (currentChar == 'N' || currentChar == 'n') {
-                    sequence = "";
-                    charsAdded = 0;
-                    trackedIndex = i + 1;
-                } else if (Character.isLetter(currentChar)) {
-                    sequence += (char)currentChar;
-                    charsAdded++;
-                    if(charsAdded == seqLength) {
-                        trackedIndex++;
-                        return SequenceUtils.dnaStringToLong(sequence);
+        char[] buffer = new char[seqLength];
+        
+        while (!eof) {
+            int numCharsRead = reader.read(buffer);
+            if (numCharsRead == -1) {
+                eof = true;
+                break;
+            }
+            
+            for (int i = 0; i < numCharsRead; i++) {
+                char currentChar = buffer[i];
+                if (!originFound) {
+                    checkForOrigin(currentChar);
+                } else {
+                    if (currentChar == 'N' || currentChar == 'n') {
+                        sequenceBuilder.setLength(0);
+                        charsAdded = 0;
+                    } else if (Character.isLetter(currentChar)) {
+                        sequenceBuilder.append(currentChar);
+                        charsAdded++;
+                        if (charsAdded == seqLength) {
+                            return SequenceUtils.dnaStringToLong(sequenceBuilder.toString());
+                        }
                     }
-                } else if (charsAdded == 0) {
-                    trackedIndex++;
                 }
             }
-        } 
+        }
+        
         return -1L;
     }
-    
-    /**
-     * reads file until "ORIGIN" is found to
-     * find index in file to begin sequencing
-     * 
-     * @return whether origin found
-     * @throws IOException
-     */
-    private void checkForOrigin(int index) throws IOException {
-        int originIndex = fileAsString.indexOf("ORIGIN", index);
-            if (originIndex != -1) {
-                originFound = true;
-                trackedIndex = originIndex + 6; // Move past "ORIGIN"
-        } else {
-            originFound = false;
+
+    private void checkForOrigin(char currentChar) {
+        if (currentChar == 'O') {
+            originFound = true;
         }
     }
-    
-}
+} 
