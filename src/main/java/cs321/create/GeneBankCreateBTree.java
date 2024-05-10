@@ -42,6 +42,8 @@ public class GeneBankCreateBTree {
             GeneBankFileReader reader = new GeneBankFileReader(gbkFile, seqLength);
             String btreeFilename = gbkFile.getName() + ".btree.data." + seqLength + ".0";
 
+            long startTime = System.currentTimeMillis();
+            long endTime = 0;
             //create BTree
             BTree tree = new BTree(arguments.getDegree(), btreeFilename, seqLength, arguments.getUseCache(), arguments.getCacheSize());
 
@@ -49,6 +51,8 @@ public class GeneBankCreateBTree {
             while ((sequence = reader.getNextSequence()) != -1) {
                 tree.insert(new TreeObject(sequence));
             }
+            endTime = System.currentTimeMillis();
+            System.out.println("\n\tTotal run time: " + (endTime - startTime) / 1000 + " seconds");
             
             //if debug level chosen, create dumpfile and databse from dumpfile
             if (arguments.getDebugLevel() == 1) {
